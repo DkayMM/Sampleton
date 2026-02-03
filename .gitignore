@@ -1,0 +1,11 @@
+# --- Backend (Django) ---
+Backend/venv/
+Backend/__pycache__/
+*.pyc
+Backend/db.sqlite3
+.env
+
+# --- Frontend (React) ---
+Frontend/node_modules/
+Frontend/dist/
+Frontend/.env.local
