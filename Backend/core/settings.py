@@ -8,9 +8,13 @@ https://docs.djangoproject.com/en/6.0/topics/settings/
 
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
-"""
 
+"""
+import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,10 +24,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-w6zf@y95$ail9ij9o(6i$i%!mca5vc=f3u7rkuv@$yiimq0ri_'
+# Si encuentra la clave en el .env la usa, si no, usa la insegura (solo para dev)
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-clave-por-defecto-para-dev')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Lo mismo para el modo Debug
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = []
 
@@ -37,9 +43,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # Mis apps
+    'rest_framework',  # Para la API REST
+    'corsheaders',     # Para que React pueda hablar con Django
+    'api',             # Lógica específica del proyecto
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware'
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -102,9 +114,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-es'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Madrid'
 
 USE_I18N = True
 
@@ -115,3 +127,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Esto le da permiso explícito al Frontend para pedirle datos al Backend
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
+
+# Configuración de archivos multimedia (imágenes, audio, etc.)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
