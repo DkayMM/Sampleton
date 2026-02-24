@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from .models import UserProfile, Track, Playlist, Comment, Like, PlaylistTrack
 from .serializers import (
     UserProfileSerializer, 
@@ -9,14 +9,22 @@ from .serializers import (
     LikeSerializer, 
     PlaylistTrackSerializer
 )
+from .permissions import IsOwnerOrReadOnly
 
-# Vista para las Canciones
+# Vista para los Tracks
 class TrackViewSet(viewsets.ModelViewSet):
     # Decimos qué datos coger de la base de datos
     queryset = Track.objects.all()
     
     # Decimos qué traductor usar
     serializer_class = TrackSerializer
+    
+    # Debe estar logueado para crear, y ser el dueño para borrar/editar
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    
+    # Cuando se sube un track, asigna al usuario del Token automáticamente
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 # Vista para los Perfiles de Usuario
 class UserProfileViewSet(viewsets.ModelViewSet):
@@ -27,16 +35,28 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 class PlaylistViewSet(viewsets.ModelViewSet):
     queryset = Playlist.objects.all()
     serializer_class = PlaylistSerializer
+    
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 # Vista para los Comentarios
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 # Vista para los Likes
 class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
+    
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 # Vista para la relación entre Playlists y Tracks (el orden)
 class PlaylistTrackViewSet(viewsets.ModelViewSet):
