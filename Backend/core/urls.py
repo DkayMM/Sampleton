@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('api.urls')),  # Conectamos la app API aquí
+    path('api/', include('api.urls')),  # Los endpoints/rutas backend se gestionarán en api/urls.py
 ]
 
 # Esto permite ver los archivos subidos (imágenes/audio) mientras desarrollo
