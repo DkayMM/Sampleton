@@ -2,7 +2,8 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     TrackViewSet, UserProfileViewSet, PlaylistViewSet, 
-    CommentViewSet, LikeViewSet, PlaylistTrackViewSet
+    CommentViewSet, LikeViewSet, PlaylistTrackViewSet,
+    RegisterView
 )
 
 # Creamos router para generar rutas dinámicamente
@@ -19,5 +20,6 @@ router.register(r'playlists-tracks', PlaylistTrackViewSet)
 
 urlpatterns = [
     # Las rutas endpoint son las generadas por el router en base a los ViewSets definidos
-    path('', include(router.urls))
+    path('', include(router.urls)),
+    path('register/', RegisterView.as_view(), name='auth_register'),
 ]

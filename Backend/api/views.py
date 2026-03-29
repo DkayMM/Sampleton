@@ -1,5 +1,8 @@
 from django.shortcuts import render
 from rest_framework import viewsets, permissions
+from rest_framework import generics
+from django.contrib.auth.models import User
+from rest_framework.permissions import AllowAny
 from .models import UserProfile, Track, Playlist, Comment, Like, PlaylistTrack
 from .serializers import (
     UserProfileSerializer, 
@@ -7,7 +10,8 @@ from .serializers import (
     PlaylistSerializer, 
     CommentSerializer, 
     LikeSerializer, 
-    PlaylistTrackSerializer
+    PlaylistTrackSerializer,
+    RegisterSerializer
 )
 from .permissions import IsOwnerOrReadOnly
 
@@ -62,3 +66,9 @@ class LikeViewSet(viewsets.ModelViewSet):
 class PlaylistTrackViewSet(viewsets.ModelViewSet):
     queryset = PlaylistTrack.objects.all()
     serializer_class = PlaylistTrackSerializer
+    
+# Vista para registrar usuarios nuevos
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,) # ¡Importante! Cualquiera debe poder registrarse sin estar logueado
+    serializer_class = RegisterSerializer

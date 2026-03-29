@@ -5,11 +5,11 @@
             "previewLimit": 50,
             "server": "localhost",
             "port": 5432,
+            "askForPassword": true,
             "driver": "PostgreSQL",
             "database": "sampleton_db",
             "username": "usuario",
-            "name": "Sampleton Docker",
-            "password": "password123"
+            "name": "Sampleton Docker"
         }
     ]
 }
