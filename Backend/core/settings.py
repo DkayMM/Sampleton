@@ -140,9 +140,11 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
 ]
 
-# Configuración de archivos multimedia (imágenes, audio, etc.)
+# Define la URL que usará el navegador (ej: /media/)
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+
+# Define la ruta física en tu ordenador donde se guardarán (ej: la carpeta 'media' en la raíz de tu proyecto)
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # CONFIGURACIÓN DE DJANGO REST FRAMEWORK Y JWT

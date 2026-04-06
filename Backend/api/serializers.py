@@ -4,15 +4,21 @@ from django.contrib.auth.models import User
 
 # Traductor de perfiles
 class UserProfileSerializer(serializers.ModelSerializer):
+    # Traemos datos del User original (Solo Lectura)
+    username = serializers.CharField(source='user.username', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
+
     class Meta: 
         model = UserProfile
-        fields = ['id', 'user', 'avatar_file', 'role']
+        fields = ['id', 'user', 'username', 'email', 'avatar_file', 'display_name', 'bio', 'location', 'role']
+        read_only_fields = ['user', 'role'] # Evitamos que el usuario se cambie a sí mismo a 'Admin' hackeando la web
   
 # Traductor de tracks 
 class TrackSerializer(serializers.ModelSerializer):
     class Meta:
         model = Track
         fields = '__all__'
+        read_only_fields = ['user']
 
 # Traductor de playlists
 class PlaylistSerializer(serializers.ModelSerializer):

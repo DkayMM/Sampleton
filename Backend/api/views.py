@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets, permissions
 from rest_framework import generics
 from django.contrib.auth.models import User
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
 from .models import UserProfile, Track, Playlist, Comment, Like, PlaylistTrack
 from .serializers import (
     UserProfileSerializer, 
@@ -72,3 +72,12 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,) # ¡Importante! Cualquiera debe poder registrarse sin estar logueado
     serializer_class = RegisterSerializer
+
+class MyProfileView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        # Magia: Busca el perfil. Si no existe (porque es un usuario antiguo), lo crea vacío en el acto.
+        profile, created = UserProfile.objects.get_or_create(user=self.request.user)
+        return profile

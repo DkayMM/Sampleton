@@ -1,23 +1,26 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Register from './pages/register';
 import Login from './pages/login';
+import Home from './pages/home';
+import Upload from './pages/upload';
+import Layout from './components/layout';
+import EditProfile from './pages/editProfile';
 
 function App() {
   return (
-    // El Router es el componente padre que envuelve todo para que el "GPS" funcione
     <Router>
-      <div className="min-h-screen bg-gray-900 font-sans">
-        {/* Aquí dentro definimos todas las rutas posibles de tu web */}
+      <div className="min-h-screen font-sans text-black bg-white">
         <Routes>
           
-          {/* 1. Ruta base: Si alguien entra a la raíz, por ahora lo redirigimos al Registro */}
-          <Route path="/" element={<Navigate to="/register" />} />
-          
-          {/* 2. Tu nueva pantalla de creación de cuenta */}
-          <Route path="/register" element={<Register />} />
+          <Route element={<Layout />}>
+             <Route path="/" element={<Home />} />
+             <Route path="/upload" element={<Upload />} />
+             /* Ruta del Perfil - pendiente de crear el componente EditProfile */
+             <Route path="/profile" element={<EditProfile />} />
+          </Route>
 
-          {/* 3. Dejamos el hueco preparado para el Login (lo crearemos en el siguiente paso) */}
-          {<Route path="/login" element={<Login />} />}
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
           
         </Routes>
       </div>
