@@ -5,6 +5,9 @@ import Home from './pages/home';
 import Upload from './pages/upload';
 import Layout from './components/layout';
 import EditProfile from './pages/editProfile';
+import MyLibrary from './pages/myLibrary';
+import PlaylistPage from './pages/playlistPage';
+import SampleDetails from './pages/sampleDetails';
 
 function App() {
   return (
@@ -15,8 +18,10 @@ function App() {
           <Route element={<Layout />}>
              <Route path="/" element={<Home />} />
              <Route path="/upload" element={<Upload />} />
-             /* Ruta del Perfil - pendiente de crear el componente EditProfile */
              <Route path="/profile" element={<EditProfile />} />
+             <Route path="/library" element={<MyLibrary />} />
+             <Route path="/playlist/:id" element={<PlaylistPage />} />
+             <Route path="/sample/:id" element={<SampleDetails />} />
           </Route>
 
           <Route path="/register" element={<Register />} />

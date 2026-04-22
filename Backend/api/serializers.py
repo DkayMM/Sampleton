@@ -25,18 +25,23 @@ class PlaylistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Playlist
         fields = '__all__'
+        read_only_fields = ['user']
         
 # Traductor de comentarios
 class CommentSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True) # 👈 Para ver el nombre en React
+
     class Meta:
         model = Comment
         fields = '__all__'
+        read_only_fields = ['user'] # 👈 El guardia de seguridad ya no pedirá el usuario en el JSON
 
 # Traductor de likes
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
         fields = '__all__'
+        read_only_fields = ['user']
 
 # Traductor de playlist order
 class PlaylistTrackSerializer(serializers.ModelSerializer):

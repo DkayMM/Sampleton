@@ -60,16 +60,16 @@ const Login = () => {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-white font-sans text-black">
             
-            <div className="flex items-center gap-3 mb-10">
-                <div className="w-12 h-12 bg-black rounded flex items-center justify-center border border-black">
-                    <div className="w-8 h-8 rounded-full border-2 border-white"></div>
-                </div>
-                <h1 className="text-3xl font-bold tracking-tight">SAMPLETON</h1>
+            <div className="flex items-center gap-2 mb-10">
+                <img src="/logo_icon.png" alt="Sampleton" className="w-12 h-12 object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                <span className="font-semibold text-3xl tracking-tighter">
+                    <span className="text-black">Sample</span><span className="text-orange-500">ton</span>
+                </span>
             </div>
 
-            <div className="bg-white p-10 border border-black w-[400px] shadow-sm">
+            <div className="bg-white p-10 rounded-2xl w-[400px] shadow-xl border border-gray-100">
                 
-                <h2 className="text-3xl font-bold mb-8">Log In</h2>
+                <h2 className="text-3xl font-extrabold mb-8 text-gray-800">Log In</h2>
                 
                 {globalError && <p className="text-red-600 bg-red-100 p-2 rounded text-sm mb-6 text-center">{globalError}</p>}
 
@@ -86,7 +86,7 @@ const Login = () => {
                                 setFieldErrors(prev => ({ ...prev, username: '' }));
                             }}
                             onBlur={(e) => validarCampo('username', e.target.value)}
-                            className={`p-3 rounded border text-sm focus:outline-none focus:ring-1 ${fieldErrors.username ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-black'} bg-gray-50`}
+                            className={`p-3 rounded-xl border text-sm focus:outline-none focus:ring-2 transition-all ${fieldErrors.username ? 'border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-orange-500 focus:ring-orange-100'} bg-gray-50`}
                         />
                         {fieldErrors.username && <span className="text-red-500 text-xs">{fieldErrors.username}</span>}
                     </div>
@@ -102,14 +102,14 @@ const Login = () => {
                                 setFieldErrors(prev => ({ ...prev, password: '' }));
                             }}
                             onBlur={(e) => validarCampo('password', e.target.value)}
-                            className={`p-3 rounded border text-sm focus:outline-none focus:ring-1 ${fieldErrors.password ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 focus:ring-black'} bg-gray-50`}
+                            className={`p-3 rounded-xl border text-sm focus:outline-none focus:ring-2 transition-all ${fieldErrors.password ? 'border-red-500 focus:ring-red-200' : 'border-gray-200 focus:border-orange-500 focus:ring-orange-100'} bg-gray-50`}
                         />
                         {fieldErrors.password && <span className="text-red-500 text-xs">{fieldErrors.password}</span>}
                     </div>
 
                     <button 
                         type="submit" 
-                        className="bg-black hover:bg-gray-800 text-white font-bold py-3 px-4 mt-4 transition-colors text-sm"
+                        className="bg-gradient-to-r from-orange-500 to-yellow-500 hover:scale-105 hover:shadow-lg text-white font-bold py-3 px-4 mt-4 transition-all shadow-md text-sm rounded-xl"
                     >
                         Log In
                     </button>
@@ -117,7 +117,7 @@ const Login = () => {
 
                 <div className="text-center mt-6 text-sm">
                     Don't have an account?{' '}
-                    <Link to="/register" className="font-bold hover:underline">
+                    <Link to="/register" className="font-bold text-orange-500 hover:text-orange-600 transition-colors hover:underline">
                         Sign Up
                     </Link>
                 </div>

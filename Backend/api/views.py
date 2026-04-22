@@ -1,83 +1,82 @@
-from django.shortcuts import render
-from rest_framework import viewsets, permissions
-from rest_framework import generics
+from rest_framework import viewsets, generics, permissions
+from .models import Track, UserProfile, Playlist, Comment, Like, PlaylistTrack
 from django.contrib.auth.models import User
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, AllowAny
-from .models import UserProfile, Track, Playlist, Comment, Like, PlaylistTrack
-from .serializers import (
-    UserProfileSerializer, 
-    TrackSerializer, 
-    PlaylistSerializer, 
-    CommentSerializer, 
-    LikeSerializer, 
-    PlaylistTrackSerializer,
-    RegisterSerializer
-)
-from .permissions import IsOwnerOrReadOnly
+from .serializers import *
 
-# Vista para los Tracks
 class TrackViewSet(viewsets.ModelViewSet):
-    # Decimos qué datos coger de la base de datos
-    queryset = Track.objects.all()
-    
-    # Decimos qué traductor usar
     serializer_class = TrackSerializer
-    
-    # Debe estar logueado para crear, y ser el dueño para borrar/editar
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    
-    # Cuando se sube un track, asigna al usuario del Token automáticamente
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly] 
+
+    def get_queryset(self):
+        action = getattr(self, 'action', None)
+        if action in ['destroy', 'update', 'partial_update']:
+            return Track.objects.filter(user=self.request.user)
+        return Track.objects.all()
+
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
-# Vista para los Perfiles de Usuario
+class PlaylistViewSet(viewsets.ModelViewSet):
+    serializer_class = PlaylistSerializer
+    permission_classes = [permissions.IsAuthenticated] 
+
+    def get_queryset(self):
+        request = getattr(self, 'request', None)
+        if request and request.user.is_authenticated:
+            return Playlist.objects.filter(user=request.user)
+        return Playlist.objects.none()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class MyProfileView(generics.RetrieveUpdateAPIView):
+    serializer_class = UserProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    def get_object(self):
+        profile, created = UserProfile.objects.get_or_create(user=self.request.user)
+        return profile
+
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    def get_queryset(self):
+        queryset = Comment.objects.all().order_by('-posted_at')
+        request = getattr(self, 'request', None)
+        track_id = request.query_params.get('track') if request else None
+        if track_id:
+            queryset = queryset.filter(track_id=track_id)
+        return queryset
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class LikeViewSet(viewsets.ModelViewSet):
+    serializer_class = LikeSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def get_queryset(self):
+        queryset = Like.objects.all()
+        request = getattr(self, 'request', None)
+        track_id = request.query_params.get('track') if request else None
+        if track_id:
+            return queryset.filter(track_id=track_id)
+            
+        if request and request.user.is_authenticated:
+            return queryset.filter(user=request.user)
+            
+        return queryset.none()
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
 
-# Vista para las Playlists
-class PlaylistViewSet(viewsets.ModelViewSet):
-    queryset = Playlist.objects.all()
-    serializer_class = PlaylistSerializer
-    
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-# Vista para los Comentarios
-class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-# Vista para los Likes
-class LikeViewSet(viewsets.ModelViewSet):
-    queryset = Like.objects.all()
-    serializer_class = LikeSerializer
-    
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-
-# Vista para la relación entre Playlists y Tracks (el orden)
 class PlaylistTrackViewSet(viewsets.ModelViewSet):
     queryset = PlaylistTrack.objects.all()
     serializer_class = PlaylistTrackSerializer
-    
-# Vista para registrar usuarios nuevos
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
-    permission_classes = (AllowAny,) # ¡Importante! Cualquiera debe poder registrarse sin estar logueado
+    permission_classes = (permissions.AllowAny,)
     serializer_class = RegisterSerializer
-
-class MyProfileView(generics.RetrieveUpdateAPIView):
-    serializer_class = UserProfileSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self):
-        # Magia: Busca el perfil. Si no existe (porque es un usuario antiguo), lo crea vacío en el acto.
-        profile, created = UserProfile.objects.get_or_create(user=self.request.user)
-        return profile

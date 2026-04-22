@@ -1,30 +1,21 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import (
-    TrackViewSet, UserProfileViewSet, PlaylistViewSet, 
-    CommentViewSet, LikeViewSet, PlaylistTrackViewSet,
-    RegisterView, MyProfileView
-)
+from .views import *
 
-# Creamos router para generar rutas dinámicamente (SOLO PARA VIEWSETS)
 router = DefaultRouter()
 
-router.register(r'tracks', TrackViewSet)
-router.register(r'profiles', UserProfileViewSet)
-router.register(r'playlists', PlaylistViewSet)
-router.register(r'comments', CommentViewSet)
-router.register(r'likes', LikeViewSet)
-router.register(r'playlists-tracks', PlaylistTrackViewSet)
+# 🚨 AÑADIMOS EL 'basename' A LAS RUTAS QUE HEMOS BLINDADO POR SEGURIDAD
+router.register(r'tracks', TrackViewSet, basename='track')
+router.register(r'playlists', PlaylistViewSet, basename='playlist')
+router.register(r'comments', CommentViewSet, basename='comment')
 
+# El resto de rutas normales
+router.register(r'profiles', UserProfileViewSet, basename='profile')
+router.register(r'playlists-tracks', PlaylistTrackViewSet, basename='playlist-track')
+router.register(r'likes', LikeViewSet, basename='like')
 
 urlpatterns = [
-    # Las rutas endpoint generadas por el router
     path('', include(router.urls)),
-    
-    # Las rutas de vistas normales (APIViews) van aquí con path()
     path('register/', RegisterView.as_view(), name='auth_register'),
-    
-    # ✅ Añadimos tu vista de perfil aquí. 
-    # Usamos 'profile/me/' para que coincida exactamente con lo que pide React
     path('profile/me/', MyProfileView.as_view(), name='my-profile'),
 ]
