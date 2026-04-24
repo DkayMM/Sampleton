@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useOutletContext } from 'react-router-dom';
 import api from '../api/axios';
 
 const Upload = () => {
     const navigate = useNavigate();
+    const { refreshTracks } = useOutletContext<any>();
 
     const [title, setTitle] = useState('');
     const [artist, setArtist] = useState(''); 
@@ -16,6 +17,13 @@ const Upload = () => {
     useEffect(() => {
         const token = localStorage.getItem('access');
         if (!token) navigate('/login');
+        else {
+            api.get('profile/me/', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            }).then(response => {
+                setArtist(response.data.display_name || response.data.username);
+            }).catch(err => console.log(err));
+        }
     }, [navigate]);
 
     const handleAudioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,6 +64,7 @@ const Upload = () => {
                 headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data'}
             });
             alert('¡Canción subida con éxito!');
+            if (refreshTracks) await refreshTracks();
             navigate('/'); 
         } catch (err) {
             setError('Error al subir la canción. Revisa tu conexión.');
@@ -66,20 +75,20 @@ const Upload = () => {
 
     return (
         <div className="w-full max-w-3xl mx-auto p-8 mt-4">
-            <h1 className="text-3xl font-bold mb-8">Upload Sample</h1>
+            <h1 className="text-3xl font-bold mb-8 dark:text-zinc-100">Upload Sample</h1>
             {error && <p className="text-red-600 bg-red-100 p-3 rounded text-sm mb-6 border border-red-300 font-bold">{error}</p>}
             <form onSubmit={handleSubmit} className="flex flex-col gap-8">
-                <div className="relative border-2 border-dashed border-orange-200 py-16 px-4 flex flex-col items-center justify-center bg-white hover:bg-orange-50/50 transition-colors rounded-2xl cursor-pointer group">
+                <div className="relative border-2 border-dashed border-orange-200 dark:border-zinc-700 py-16 px-4 flex flex-col items-center justify-center bg-white dark:bg-zinc-800/50 hover:bg-orange-50/50 dark:hover:bg-zinc-800 transition-colors rounded-2xl cursor-pointer group">
                     {audioFile ? (
                         <div className="text-xl font-bold text-orange-500 flex flex-col items-center gap-2">
                             <span>✅ Archivo seleccionado:</span>
-                            <span className="text-black">{audioFile.name}</span>
+                            <span className="text-black dark:text-zinc-200">{audioFile.name}</span>
                         </div>
                     ) : (
                         <>
-                            <div className="w-16 h-16 border-2 border-orange-400 text-orange-500 rounded-full flex items-center justify-center mb-6 bg-white group-hover:scale-110 shadow-sm group-hover:shadow-md transition-all"><span className="text-3xl font-light">↑</span></div>
-                            <div className="h-4 bg-orange-100 w-64 mb-3 rounded-full"></div>
-                            <div className="h-4 bg-orange-50 w-48 mb-8 rounded-full"></div>
+                            <div className="w-16 h-16 border-2 border-orange-400 text-orange-500 rounded-full flex items-center justify-center mb-6 bg-white dark:bg-zinc-900 group-hover:scale-110 shadow-sm group-hover:shadow-md transition-all"><span className="text-3xl font-light">↑</span></div>
+                            <div className="h-4 bg-orange-100 dark:bg-zinc-700 w-64 mb-3 rounded-full"></div>
+                            <div className="h-4 bg-orange-50 dark:bg-zinc-800 w-48 mb-8 rounded-full"></div>
                             <div className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-8 rounded-full text-sm cursor-pointer shadow-md transition-colors">Choose File</div>
                         </>
                     )}
@@ -87,25 +96,26 @@ const Upload = () => {
                 </div>
                 <div className="flex flex-col gap-6">
                     <div className="flex flex-col gap-2">
-                        <label className="font-bold text-sm">Sample Title *</label>
-                        <input type="text" placeholder="Enter sample title" value={title} onChange={(e) => setTitle(e.target.value)} className="p-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all" required/>
+                        <label className="font-bold text-sm dark:text-zinc-200">Sample Title *</label>
+                        <input type="text" placeholder="Enter sample title" value={title} onChange={(e) => setTitle(e.target.value)} className="p-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900/50 text-sm focus:outline-none focus:border-orange-500 dark:focus:border-orange-500 focus:ring-0 transition-colors duration-300 dark:text-zinc-100" required/>
                     </div>
                     <div className="flex flex-col gap-2">
-                        <label className="font-bold text-sm">Artist Name *</label>
-                        <input type="text" placeholder="Enter artist name" value={artist} onChange={(e) => setArtist(e.target.value)} className="p-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all" required/>
+                        <label className="font-bold text-sm dark:text-zinc-200">Artist Name *</label>
+                        <input type="text" placeholder="Auto-filled artist name" value={artist} readOnly className="p-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-gray-100 dark:bg-zinc-800 text-sm focus:outline-none transition-all dark:text-zinc-400 cursor-not-allowed" required/>
                     </div>
                     <div className="flex flex-col gap-2">
-                        <label className="font-bold text-sm">Genre *</label>
-                        <select value={genre} onChange={(e) => setGenre(e.target.value)} className="p-3 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all appearance-none cursor-pointer" required>
+                        <label className="font-bold text-sm dark:text-zinc-200">Genre *</label>
+                        <select value={genre} onChange={(e) => setGenre(e.target.value)} className="p-3 rounded-xl border border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-900/50 text-sm focus:outline-none focus:border-orange-500 dark:focus:border-orange-500 focus:ring-0 transition-colors duration-300 appearance-none cursor-pointer dark:text-zinc-100" required>
                             <option value="" disabled>Select a genre</option>
                             <option value="Lo-Fi">Lo-Fi</option><option value="Electronic">Electronic</option>
                             <option value="Hip-Hop">Hip-Hop</option><option value="Rock">Rock</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
                     <div className="flex flex-col gap-2">
-                        <label className="font-bold text-sm">Cover Image</label>
-                        <div className="relative border-2 border-dashed border-gray-300 rounded-xl w-32 h-32 flex items-center justify-center bg-gray-50 hover:bg-orange-50 hover:border-orange-300 transition-all cursor-pointer">
-                            {coverFile ? <span className="text-xs font-bold text-center p-2 break-all text-orange-600">{coverFile.name}</span> : <span className="text-gray-400 text-sm">Upload</span>}
+                        <label className="font-bold text-sm dark:text-zinc-200">Cover Image</label>
+                        <div className="relative border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-xl w-32 h-32 flex items-center justify-center bg-gray-50 dark:bg-zinc-900/50 hover:bg-orange-50 dark:hover:bg-zinc-800 hover:border-orange-300 transition-all cursor-pointer">
+                            {coverFile ? <span className="text-xs font-bold text-center p-2 break-all text-orange-600">{coverFile.name}</span> : <span className="text-gray-400 dark:text-zinc-500 text-sm">Upload</span>}
                             <input type="file" accept="image/*" onChange={handleCoverChange} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"/>
                         </div>
                     </div>

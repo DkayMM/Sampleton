@@ -7,26 +7,32 @@ type ContextType = {
     currentTrack: any;
     isPlaying: boolean;
     openPlaylistModal: (track: any) => void;
+    searchTerm: string;
 };
 
 const Home = () => {
     const navigate = useNavigate();
-    const { tracks, handlePlayTrack, currentTrack, isPlaying, openPlaylistModal } = useOutletContext<ContextType>();
+    const { tracks, handlePlayTrack, currentTrack, isPlaying, openPlaylistModal, searchTerm } = useOutletContext<ContextType>();
+    
+    const filteredTracks = tracks.filter(t => 
+        (t.title || '').toLowerCase().includes(searchTerm.toLowerCase()) || 
+        (t.artist || '').toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     const renderGrid = (title: string) => (
         <section>
             <div className="mb-4">
-                <h2 className="text-xl font-extrabold text-gray-800 dark:text-gray-100">{title}</h2>
+                <h2 className="text-xl font-extrabold text-gray-800 dark:text-zinc-100">{title}</h2>
             </div>
             {/* 🚨 Añadido un poco de padding (pt-2 pb-6 px-2 -mx-2) para que la sombra al elevar la tarjeta no se corte */}
             <div className="flex gap-4 overflow-x-auto pb-6 pt-2 px-2 -mx-2 custom-scrollbar">
-                {tracks.length === 0 ? <p className="text-gray-500 italic">No hay canciones todavía...</p> : (
-                    tracks.map((track) => (
+                {filteredTracks.length === 0 ? <p className="text-gray-500 italic">No hay canciones que coincidan con tu búsqueda...</p> : (
+                    filteredTracks.map((track) => (
                         <div 
                             key={`grid-${track.id}`} 
                             onClick={() => navigate(`/sample/${track.id}`)}
                             // 🚨 EFECTOS DE HOVER EN LA TARJETA PRINCIPAL (Sombra, Elevación y Borde naranja)
-                            className="min-w-[180px] w-[180px] group cursor-pointer bg-transparent hover:bg-white dark:hover:bg-gray-800 p-2 rounded-lg transition-all duration-300 relative hover:shadow-xl hover:shadow-orange-100 dark:hover:shadow-black hover:-translate-y-2 border border-transparent hover:border-orange-200 dark:hover:border-gray-700"
+                            className="min-w-[180px] w-[180px] group cursor-pointer bg-transparent hover:bg-zinc-50 dark:hover:bg-zinc-800/80 p-2 rounded-lg transition-all duration-300 relative hover:shadow-xl hover:shadow-orange-100 dark:hover:shadow-zinc-950 hover:-translate-y-2 border border-transparent hover:border-orange-200 dark:hover:border-orange-500"
                         >
                             
                             {/* BOTÓN '+' PARA AÑADIR A PLAYLIST */}
@@ -35,13 +41,13 @@ const Home = () => {
                                     e.stopPropagation(); 
                                     openPlaylistModal(track); 
                                 }}
-                                className="absolute top-4 right-4 w-8 h-8 bg-white dark:bg-gray-800 border-2 border-orange-500 text-orange-500 rounded-full flex items-center justify-center font-bold text-lg opacity-0 group-hover:opacity-100 hover:scale-110 hover:bg-orange-50 dark:hover:bg-gray-700 transition-all z-20 shadow-md"
+                                className="absolute top-4 right-4 w-8 h-8 bg-white dark:bg-zinc-800 border-2 border-orange-500 text-orange-500 rounded-full flex items-center justify-center font-bold text-lg opacity-0 group-hover:opacity-100 hover:scale-110 hover:bg-orange-50 dark:hover:bg-zinc-700 transition-all z-20 shadow-md"
                                 title="Add to Playlist"
                             >
                                 +
                             </button>
 
-                            <div className="relative w-full h-[180px] bg-gray-200 dark:bg-gray-800 rounded border border-gray-300 dark:border-gray-700 mb-3 flex items-center justify-center overflow-hidden shadow-sm">
+                            <div className="relative w-full h-[180px] bg-gray-200 dark:bg-zinc-800 rounded border border-gray-300 dark:border-zinc-700 mb-3 flex items-center justify-center overflow-hidden shadow-sm">
                                 {/* 🚨 EFECTO DE ZOOM EN LA IMAGEN */}
                                 {track.cover_image ? (
                                     <img src={track.cover_image} alt={track.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
@@ -71,8 +77,8 @@ const Home = () => {
                             </div>
                             
                             {/* 🚨 TÍTULO NARANJA AL HACER HOVER */}
-                            <div className="font-bold text-sm truncate group-hover:text-orange-500 dark:text-gray-200 transition-colors" title={track.title}>{track.title}</div>
-                            <div className="text-xs text-gray-500 dark:text-gray-400 truncate group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">{track.artist} • <span className="uppercase">{track.genre}</span></div>
+                            <div className="font-bold text-sm truncate group-hover:text-orange-500 dark:text-zinc-200 dark:group-hover:text-orange-400 transition-colors" title={track.title}>{track.title}</div>
+                            <div className="text-xs text-gray-500 dark:text-zinc-400 truncate group-hover:text-gray-700 dark:group-hover:text-zinc-300 transition-colors">{track.artist} • <span className="uppercase">{track.genre}</span></div>
                         </div>
                     ))
                 )}

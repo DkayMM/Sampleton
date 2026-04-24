@@ -81,6 +81,7 @@ class Playlist(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     
     title = models.CharField(max_length=200)
+    cover_image = models.ImageField(upload_to='playlist_covers/', blank=True, null=True)
     is_public = models.BooleanField(default=True)
 
     # Para conectar con la tabla Track a través de la tabla PlaylistTrack

@@ -12,7 +12,7 @@ import SampleDetails from './pages/sampleDetails';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen font-sans text-black bg-white">
+      <div className="min-h-screen font-sans text-black dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-900 transition-colors duration-300">
         <Routes>
           
           <Route element={<Layout />}>

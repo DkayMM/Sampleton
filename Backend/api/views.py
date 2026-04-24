@@ -18,16 +18,29 @@ class TrackViewSet(viewsets.ModelViewSet):
 
 class PlaylistViewSet(viewsets.ModelViewSet):
     serializer_class = PlaylistSerializer
-    permission_classes = [permissions.IsAuthenticated] 
+
+    def get_permissions(self):
+        if self.action in ['retrieve', 'list']:
+            return [permissions.AllowAny()]
+        return [permissions.IsAuthenticated()]
 
     def get_queryset(self):
-        request = getattr(self, 'request', None)
-        if request and request.user.is_authenticated:
-            return Playlist.objects.filter(user=request.user)
-        return Playlist.objects.none()
+        if self.action in ['list']:
+            user = self.request.user
+            if user.is_authenticated:
+                from django.db.models import Q
+                return Playlist.objects.filter(Q(user=user) | Q(is_public=True))
+            return Playlist.objects.filter(is_public=True)
+        return Playlist.objects.all()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def perform_update(self, serializer):
+        if serializer.instance.user != self.request.user:
+            from rest_framework.exceptions import PermissionDenied
+            raise PermissionDenied()
+        serializer.save()
 
 class MyProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = UserProfileSerializer

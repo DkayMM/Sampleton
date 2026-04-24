@@ -102,12 +102,12 @@ const EditProfile = () => {
         <div className="w-full max-w-3xl mx-auto p-8 relative">
             <button 
                 onClick={() => navigate('/')} 
-                className="absolute top-8 right-8 border-2 border-gray-200 text-gray-400 w-10 h-10 rounded-full flex items-center justify-center hover:bg-orange-50 hover:text-orange-500 hover:border-orange-300 transition-all font-bold shadow-sm"
+                className="absolute top-8 right-8 border-2 border-gray-200 dark:border-zinc-700 text-gray-400 dark:text-zinc-500 w-10 h-10 rounded-full flex items-center justify-center hover:bg-orange-50 dark:hover:bg-zinc-800 hover:text-orange-500 dark:hover:text-orange-400 hover:border-orange-300 transition-all font-bold shadow-sm"
             >
                 ✕
             </button>
 
-            <h1 className="text-3xl font-extrabold mb-10 text-gray-800">Edit Profile</h1>
+            <h1 className="text-3xl font-extrabold mb-10 text-gray-800 dark:text-zinc-100">Edit Profile</h1>
 
             {error && <p className="text-red-600 bg-red-100 p-3 mb-6 border border-red-300 font-bold">{error}</p>}
             {success && <p className="text-green-700 bg-green-100 p-3 mb-6 border border-green-300 font-bold">¡Perfil actualizado correctamente!</p>}
@@ -116,11 +116,11 @@ const EditProfile = () => {
                 
                 {/* FOTO DE PERFIL */}
                 <div className="flex items-center gap-8">
-                    <div className="w-32 h-32 bg-orange-50/50 rounded-full flex-shrink-0 border-2 border-orange-200 overflow-hidden flex items-center justify-center relative shadow-inner">
+                    <div className="w-32 h-32 bg-orange-50/50 dark:bg-zinc-800 rounded-full flex-shrink-0 border-2 border-orange-200 dark:border-zinc-700 overflow-hidden flex items-center justify-center relative shadow-inner">
                         {formData.avatar_file ? (
                             <img src={formData.avatar_file} alt="Avatar" className="w-full h-full object-cover" />
                         ) : (
-                            <span className="text-4xl text-gray-400">👤</span>
+                            <span className="text-4xl text-gray-400 dark:text-zinc-500">👤</span>
                         )}
                         <input 
                             type="file" 
@@ -132,7 +132,7 @@ const EditProfile = () => {
                     </div>
                     
                     <div className="flex flex-col gap-3">
-                        <span className="font-bold text-sm">Profile Picture</span>
+                        <span className="font-bold text-sm dark:text-zinc-200">Profile Picture</span>
                         <div className="flex items-center gap-4">
                             <div className="relative border-2 border-orange-500 text-orange-500 rounded-full px-5 py-2 text-sm font-bold hover:bg-gradient-to-r hover:from-orange-500 hover:to-yellow-500 hover:text-white hover:border-transparent transition-all shadow-sm cursor-pointer">
                                 Upload New Photo
@@ -148,47 +148,47 @@ const EditProfile = () => {
                 </div>
 
                 {/* FORMULARIO DE TEXTO */}
-                <div className="border border-gray-200 rounded-2xl shadow-sm p-8 flex flex-col gap-6 bg-white">
+                <div className="border border-gray-200 dark:border-zinc-700 rounded-2xl shadow-sm p-8 flex flex-col gap-6 bg-white dark:bg-zinc-800">
                     <div className="flex flex-col gap-2">
-                        <label className="font-bold text-sm text-gray-500">Username (Cannot be changed)</label>
-                        <input type="text" value={formData.username} disabled className="p-3 bg-gray-200 border border-gray-300 text-sm cursor-not-allowed text-gray-500"/>
+                        <label className="font-bold text-sm text-gray-500 dark:text-zinc-400">Username (Cannot be changed)</label>
+                        <input type="text" value={formData.username} disabled className="p-3 bg-gray-200 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 text-sm cursor-not-allowed text-gray-500 dark:text-zinc-500"/>
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <label className="font-bold text-sm text-gray-500">Email (Cannot be changed)</label>
-                        <input type="email" value={formData.email} disabled className="p-3 bg-gray-200 border border-gray-300 text-sm cursor-not-allowed text-gray-500"/>
+                        <label className="font-bold text-sm text-gray-500 dark:text-zinc-400">Email (Cannot be changed)</label>
+                        <input type="email" value={formData.email} disabled className="p-3 bg-gray-200 dark:bg-zinc-900 border border-gray-300 dark:border-zinc-700 text-sm cursor-not-allowed text-gray-500 dark:text-zinc-500"/>
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <label className="font-bold text-sm">Display Name</label>
+                        <label className="font-bold text-sm dark:text-zinc-200">Display Name</label>
                         <input 
                             type="text" 
                             value={formData.display_name}
                             onChange={(e) => setFormData({...formData, display_name: e.target.value})}
                             placeholder="Enter display name" 
-                            className="p-3 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all text-gray-800"
+                            className="p-3 bg-gray-50 dark:bg-zinc-900/50 border border-gray-300 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:border-orange-500 dark:focus:border-orange-500 focus:ring-0 transition-colors duration-300 text-gray-800 dark:text-zinc-100"
                         />
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <label className="font-bold text-sm">Bio</label>
+                        <label className="font-bold text-sm dark:text-zinc-200">Bio</label>
                         <textarea 
                             value={formData.bio}
                             onChange={(e) => setFormData({...formData, bio: e.target.value})}
                             placeholder="Tell us about yourself..." 
                             rows={4}
-                            className="p-3 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all text-gray-800 resize-none"
+                            className="p-3 bg-gray-50 dark:bg-zinc-900/50 border border-gray-300 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:border-orange-500 dark:focus:border-orange-500 focus:ring-0 transition-colors duration-300 text-gray-800 dark:text-zinc-100 resize-none"
                         ></textarea>
                     </div>
 
                     <div className="flex flex-col gap-2">
-                        <label className="font-bold text-sm">Location</label>
+                        <label className="font-bold text-sm dark:text-zinc-200">Location</label>
                         <input 
                             type="text" 
                             value={formData.location}
                             onChange={(e) => setFormData({...formData, location: e.target.value})}
                             placeholder="e.g. Madrid, Spain"
-                            className="p-3 bg-gray-50 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-100 transition-all"
+                            className="p-3 bg-gray-50 dark:bg-zinc-900/50 border border-gray-300 dark:border-zinc-700 rounded-xl text-sm focus:outline-none focus:border-orange-500 dark:focus:border-orange-500 focus:ring-0 transition-colors duration-300 dark:text-zinc-100"
                         />
                     </div>
                 </div>
