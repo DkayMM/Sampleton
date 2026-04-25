@@ -109,7 +109,7 @@ const PlaylistPage = () => {
         <div className="w-full max-w-5xl mx-auto flex flex-col pb-24">
             
             {/* --- CABECERA DE LA PLAYLIST --- */}
-            <div className="flex items-end gap-8 mb-12 mt-8 px-4">
+            <div className="flex flex-col md:flex-row items-center md:items-end text-center md:text-left gap-6 md:gap-8 mb-8 md:mb-12 mt-4 md:mt-8 px-4">
                 {/* Cuadrado grande de portada */}
                 <div
                     className={`w-56 h-56 bg-gradient-to-br from-orange-100 to-yellow-100 dark:from-zinc-800 dark:to-zinc-700 border-2 border-orange-200 dark:border-zinc-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-orange-100/50 dark:shadow-none relative overflow-hidden ${isOwner ? 'cursor-pointer group' : ''}`}
@@ -136,7 +136,7 @@ const PlaylistPage = () => {
                     </p>
                     
                     {/* Botones de acción */}
-                    <div className="flex items-center gap-4 mt-2">
+                    <div className="flex items-center justify-center md:justify-start gap-4 mt-2">
                         <button 
                             onClick={() => { if (playlistTracks.length > 0) handlePlayTrack(playlistTracks[0]); }}
                             className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white rounded-full px-8 py-3 font-bold flex items-center gap-2 hover:scale-105 hover:shadow-lg transition-all shadow-md">
@@ -153,10 +153,10 @@ const PlaylistPage = () => {
             <div className="flex flex-col w-full">
                 {/* Cabecera de la tabla */}
                 <div className="flex items-center text-xs font-bold text-gray-500 dark:text-zinc-400 border-y border-gray-300 dark:border-zinc-700 py-2 px-4 uppercase tracking-wider mb-2">
-                    <div className="w-8">#</div>
+                    <div className="hidden sm:block w-8">#</div>
                     <div className="flex-1">Title</div>
-                    <div className="w-1/3">Artist</div>
-                    <div className="w-24 text-right">⏱ Duration</div>
+                    <div className="hidden md:block w-1/3">Artist</div>
+                    <div className="w-20 md:w-24 text-right">⏱ <span className="hidden sm:inline">Duration</span></div>
                 </div>
 
                 {/* Filas de canciones */}
@@ -172,7 +172,7 @@ const PlaylistPage = () => {
                             className="flex items-center text-sm py-3 px-4 border-b border-gray-100 dark:border-zinc-800 hover:bg-orange-50/50 dark:hover:bg-zinc-800/80 transition-all cursor-pointer group"
                         >
                             {/* Número o botón de Play al pasar el ratón */}
-                            <div className="w-8 text-gray-500 font-medium group-hover:text-orange-500 transition-colors">
+                            <div className="hidden sm:block w-8 text-gray-500 font-medium group-hover:text-orange-500 transition-colors">
                                 <span className="group-hover:hidden">{index + 1}</span>
                                 <span className="hidden group-hover:inline text-orange-500 font-bold">
                                     {(currentTrack?.id === track.id && isPlaying) ? (
@@ -184,7 +184,7 @@ const PlaylistPage = () => {
                             </div>
                             
                             {/* Título con foto miniatura */}
-                            <div className="flex-1 flex items-center gap-3 pr-4">
+                            <div className="flex-1 flex items-center gap-3 pr-2 md:pr-4">
                                 <div className="w-10 h-10 bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-md flex-shrink-0 overflow-hidden shadow-sm">
                                     {track.cover_image ? (
                                         <img src={track.cover_image} alt="cover" className="w-full h-full object-cover" />
@@ -192,21 +192,24 @@ const PlaylistPage = () => {
                                         <span className="flex items-center justify-center w-full h-full text-xs opacity-50">🎵</span>
                                     )}
                                 </div>
-                                <span className="font-bold truncate group-hover:text-orange-600 dark:text-zinc-200 transition-colors">{track.title}</span>
+                                <div className="flex flex-col">
+                                    <span className="font-bold truncate group-hover:text-orange-600 dark:text-zinc-200 transition-colors text-sm">{track.title}</span>
+                                    <span className="md:hidden text-xs text-gray-500 truncate">{track.artist}</span>
+                                </div>
                             </div>
                             
-                            {/* Artista */}
-                            <div className="w-1/3 text-gray-600 dark:text-zinc-400 truncate pr-4">{track.artist}</div>
+                            {/* Artista (Solo Desktop) */}
+                            <div className="hidden md:block w-1/3 text-gray-600 dark:text-zinc-400 truncate pr-4">{track.artist}</div>
                             
                             {/* Duración */}
-                            <div className="w-24 text-right text-gray-500 dark:text-zinc-400 font-medium">
+                            <div className="w-20 md:w-24 text-right text-gray-500 dark:text-zinc-400 font-medium text-xs md:text-sm">
                                 <TrackDuration audioUrl={track.audio_file} />
                             </div>
 
                             {/* Botón Borrar */}
                             <button 
                                 onClick={(e) => { e.stopPropagation(); handleRemoveTrack(track.id); }}
-                                className="w-8 h-8 ml-4 flex items-center justify-center rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 opacity-0 group-hover:opacity-100 transition-all font-bold"
+                                className="w-8 h-8 ml-2 md:ml-4 flex items-center justify-center rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all font-bold shrink-0"
                             >
                                 ✕
                             </button>

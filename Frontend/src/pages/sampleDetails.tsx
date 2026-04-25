@@ -149,7 +149,7 @@ const SampleDetails = () => {
                             fileInputRef.current?.click();
                         }
                     }}
-                    className={`w-64 h-64 bg-gray-200 dark:bg-zinc-800 border border-gray-400 dark:border-zinc-700 flex-shrink-0 relative overflow-hidden shadow-sm ${myUserId === track.user ? 'cursor-pointer group' : ''}`}
+                    className={`w-64 h-64 mx-auto md:mx-0 bg-gray-200 dark:bg-zinc-800 border border-gray-400 dark:border-zinc-700 flex-shrink-0 relative overflow-hidden shadow-sm ${myUserId === track.user ? 'cursor-pointer group' : ''}`}
                 >
                     {track.cover_image ? (
                         <img src={track.cover_image} alt={track.title} className="w-full h-full object-cover transition-opacity group-hover:opacity-80" />
@@ -167,10 +167,10 @@ const SampleDetails = () => {
                 </div>
 
                 {/* Detalles (Derecha) */}
-                <div className="flex-1 flex flex-col w-full">
-                    <div className="mb-4 flex items-center justify-between">
+                <div className="flex-1 flex flex-col w-full text-center md:text-left">
+                    <div className="mb-4 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
                         <div>
-                            <h1 className="text-4xl font-extrabold mb-1 text-gray-800 dark:text-zinc-100">{track.title}</h1>
+                            <h1 className="text-3xl md:text-4xl font-extrabold mb-1 text-gray-800 dark:text-zinc-100">{track.title}</h1>
                             <p className="text-lg text-orange-500 font-bold">{track.artist}</p>
                         </div>
                         <button 
@@ -199,8 +199,8 @@ const SampleDetails = () => {
                         ))}
                     </div>
 
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
+                    <div className="flex flex-wrap items-center justify-center md:justify-start gap-4">
+                        <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                             <button 
                                 onClick={handleLike}
                                 className={`w-12 h-12 flex items-center justify-center rounded-full text-2xl transition-all shadow-sm ${
@@ -254,7 +254,7 @@ const SampleDetails = () => {
                     <div className="w-12 h-12 bg-gray-200 dark:bg-zinc-800 rounded-full border border-gray-400 dark:border-zinc-700 flex-shrink-0 flex items-center justify-center text-xl font-bold text-gray-500 dark:text-zinc-400">
                         {localStorage.getItem('username')?.charAt(0).toUpperCase() || '👤'}
                     </div>
-                    <form onSubmit={handlePostComment} className="flex-1 flex gap-2">
+                    <form onSubmit={handlePostComment} className="flex-1 flex flex-col sm:flex-row gap-2">
                         <input 
                             type="text" 
                             value={newComment}
@@ -262,7 +262,7 @@ const SampleDetails = () => {
                             placeholder="Write a comment..." 
                             className="flex-1 bg-gray-50 dark:bg-zinc-800/50 border-2 border-gray-200 dark:border-zinc-700 rounded-xl p-3 text-sm focus:outline-none focus:border-orange-500 dark:focus:border-orange-500 focus:bg-white dark:focus:bg-zinc-900 focus:ring-0 transition-colors duration-300 dark:text-zinc-100"
                         />
-                        <button type="submit" className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 rounded-xl font-bold text-sm hover:shadow-lg hover:scale-105 transition-all">
+                        <button type="submit" className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-8 py-3 sm:py-0 rounded-xl font-bold text-sm hover:shadow-lg hover:scale-105 transition-all">
                             Post
                         </button>
                     </form>

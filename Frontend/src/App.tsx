@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
 import Register from './pages/register';
 import Login from './pages/login';
 import Home from './pages/home';
@@ -10,6 +11,16 @@ import PlaylistPage from './pages/playlistPage';
 import SampleDetails from './pages/sampleDetails';
 
 function App() {
+  useEffect(() => {
+    const theme = localStorage.getItem('theme');
+    if (theme === 'dark' || !theme) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
   return (
     <Router>
       <div className="min-h-screen font-sans text-black dark:text-zinc-100 bg-zinc-100 dark:bg-zinc-900 transition-colors duration-300">

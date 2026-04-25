@@ -90,7 +90,7 @@ const Register = () => {
                 </span>
             </div>
 
-            <div className="bg-white dark:bg-zinc-800 p-10 rounded-2xl w-[400px] shadow-xl border border-gray-100 dark:border-zinc-700 transition-colors duration-300">
+            <div className="bg-white dark:bg-zinc-800 p-8 md:p-10 rounded-2xl w-[90%] max-w-[400px] shadow-xl border border-gray-100 dark:border-zinc-700 transition-colors duration-300">
                 
                 <h2 className="text-3xl font-extrabold mb-8 text-gray-800 dark:text-zinc-100">Register</h2>
                 

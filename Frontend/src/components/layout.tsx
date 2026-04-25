@@ -188,6 +188,7 @@ const Layout = () => {
             });
             setMyPlaylists([...myPlaylists, res.data]);
             setNewPlaylistTitle('');
+            window.dispatchEvent(new Event('playlistRefresh'));
             if (!trackToAdd) {
                 alert('¡Playlist creada con éxito!');
                 setIsPlaylistModalOpen(false);
@@ -213,14 +214,14 @@ const Layout = () => {
     return (
         <div className="min-h-screen bg-zinc-100 dark:bg-zinc-900 font-sans text-black dark:text-zinc-100 pb-24 select-none transition-colors duration-300">
             
-            <header className="flex items-center justify-between p-4 border-b border-gray-300 dark:border-zinc-800 sticky top-0 bg-zinc-50 dark:bg-zinc-900 z-10 shadow-sm transition-colors duration-300">
+            <header className="flex flex-wrap md:flex-nowrap items-center justify-between p-4 gap-y-4 border-b border-gray-300 dark:border-zinc-800 sticky top-0 bg-zinc-50 dark:bg-zinc-900 z-10 shadow-sm transition-colors duration-300">
                 <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
                     <img src="/logo_icon.png" alt="Sampleton" className="w-12 h-12 object-contain group-hover:scale-110 transition-transform duration-300" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
                     <span className="font-semibold text-2xl tracking-tighter">
                         <span className="text-black dark:text-white">Sample</span><span className="text-orange-500">ton</span>
                     </span>
                 </div>
-                <div className="flex-1 max-w-xl mx-8">
+                <div className="w-full order-last md:order-none md:flex-1 max-w-xl md:mx-8">
                     <div className="relative group">
                         <span className="absolute left-3 top-2.5 text-gray-400 group-focus-within:text-orange-500 transition-colors">
                             <svg fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" /></svg>
@@ -228,16 +229,16 @@ const Layout = () => {
                         <input type="text" placeholder="Search for samples..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full bg-gray-50 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-700 dark:text-zinc-100 rounded-full py-1.5 pl-10 pr-4 text-sm focus:outline-none focus:border-orange-500 dark:focus:border-orange-500 focus:ring-0 transition-colors duration-300 shadow-sm"/>
                     </div>
                 </div>
-                <div className="flex items-center gap-3 text-sm font-bold">
-                    <button onClick={toggleDarkMode} className="w-9 h-9 mr-2 flex items-center justify-center rounded-full bg-zinc-700 dark:bg-zinc-800 border-2 border-transparent hover:border-gray-300 dark:hover:border-zinc-600 text-white dark:text-zinc-300 hover:text-orange-500 dark:hover:text-orange-500 transition-colors shadow-sm text-sm">
+                <div className="flex flex-wrap items-center justify-end gap-2 md:gap-3 text-xs md:text-sm font-bold ml-auto md:ml-0">
+                    <button onClick={toggleDarkMode} className="w-8 h-8 md:w-9 md:h-9 md:mr-2 flex items-center justify-center rounded-full bg-zinc-700 dark:bg-zinc-800 border-2 border-transparent hover:border-gray-300 dark:hover:border-zinc-600 text-white dark:text-zinc-300 hover:text-orange-500 dark:hover:text-orange-500 transition-colors shadow-sm text-sm shrink-0">
                         {isDarkMode ? '☀️' : '🌙'}
                     </button>
-                    <button onClick={() => navigate('/')} className="text-gray-600 dark:text-zinc-300 hover:text-orange-500 dark:hover:text-orange-400 px-3 py-1.5 rounded-full hover:bg-orange-50 dark:hover:bg-zinc-800 transition-colors">Discover</button>
-                    {!isGuest && <button onClick={() => navigate('/library')} className="text-gray-600 dark:text-zinc-300 hover:text-orange-500 dark:hover:text-orange-400 px-3 py-1.5 rounded-full hover:bg-orange-50 dark:hover:bg-zinc-800 transition-colors">My Library</button>}
-                    <button onClick={() => isGuest ? navigate('/login') : navigate('/upload')} className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-5 py-1.5 rounded-full flex items-center gap-2 hover:shadow-lg hover:scale-105 transition-all outline-none border-none">↑ Upload</button>
+                    <button onClick={() => navigate('/')} className="text-gray-600 dark:text-zinc-300 hover:text-orange-500 dark:hover:text-orange-400 px-2 py-1.5 md:px-3 rounded-full hover:bg-orange-50 dark:hover:bg-zinc-800 transition-colors whitespace-nowrap">Discover</button>
+                    {!isGuest && <button onClick={() => navigate('/library')} className="text-gray-600 dark:text-zinc-300 hover:text-orange-500 dark:hover:text-orange-400 px-2 py-1.5 md:px-3 rounded-full hover:bg-orange-50 dark:hover:bg-zinc-800 transition-colors whitespace-nowrap">My Library</button>}
+                    <button onClick={() => isGuest ? navigate('/login') : navigate('/upload')} className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-3 md:px-5 py-1.5 rounded-full flex items-center gap-1 md:gap-2 hover:shadow-lg hover:scale-105 transition-all outline-none border-none whitespace-nowrap shrink-0">↑ Upload</button>
                     
                     {isGuest ? (
-                        <button onClick={() => navigate('/login')} className="w-9 h-9 rounded-full border-2 border-orange-500 text-orange-500 flex items-center justify-center hover:bg-orange-50 transition-colors">👤</button>
+                        <button onClick={() => navigate('/login')} className="w-8 h-8 md:w-9 md:h-9 shrink-0 rounded-full border-2 border-orange-500 text-orange-500 flex items-center justify-center hover:bg-orange-50 transition-colors">👤</button>
                     ) : (
                         <div className="relative" ref={menuRef}>
                             <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className={`w-9 h-9 rounded-full border-2 border-transparent hover:border-orange-500 flex items-center justify-center transition-all focus:outline-none overflow-hidden shadow-sm ${isProfileMenuOpen ? 'ring-2 ring-orange-500 ring-offset-2' : ''}`}>
@@ -261,8 +262,8 @@ const Layout = () => {
 
             <audio ref={audioRef} src={currentTrack ? currentTrack.audio_file : ''} autoPlay={isPlaying} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} onEnded={handleNext} onTimeUpdate={(e) => { if (!isDraggingProgress) setCurrentTime(e.currentTarget.currentTime); }} onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)} />
 
-            <div className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[800px] max-w-full bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md border border-gray-200 dark:border-zinc-700 rounded-full px-6 py-3 flex items-center justify-between shadow-xl z-[90]">
-                <div className="flex items-center gap-3 w-1/4">
+            <div className="fixed bottom-2 md:bottom-4 left-1/2 -translate-x-1/2 w-[95%] md:w-[800px] max-w-full bg-white/90 dark:bg-zinc-800/90 backdrop-blur-md border border-gray-200 dark:border-zinc-700 rounded-3xl md:rounded-full px-4 md:px-6 py-2 md:py-3 flex flex-col md:flex-row items-center justify-between gap-2 md:gap-4 shadow-xl z-[90]">
+                <div className="flex items-center justify-between md:justify-start gap-3 w-full md:w-1/4">
                     {currentTrack ? (
                         <>
                             <div className="w-12 h-12 bg-orange-100 rounded-full border-2 border-orange-200 overflow-hidden flex-shrink-0 shadow-sm">
@@ -280,7 +281,7 @@ const Layout = () => {
                         </>
                     )}
                 </div>
-                <div className="flex-1 flex flex-col items-center gap-2">
+                <div className="flex-1 w-full flex flex-col items-center gap-1 md:gap-2">
                     <div className="flex items-center gap-6 text-xl">
                         <button onClick={handlePrev} className={`w-6 h-6 hover:scale-125 transition-transform ${currentTrack ? 'text-gray-600 dark:text-zinc-300 hover:text-orange-500 dark:hover:text-orange-400' : 'text-gray-300 dark:text-zinc-600 cursor-not-allowed'}`}>
                             <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full"><path d="M18.945 16.94C20.195 17.653 21.75 16.75 21.75 15.312V8.688c0-1.439-1.555-2.342-2.805-1.628L12 11.129V7.062c0-1.439-1.555-2.342-2.805-1.628L2.087 9.495c-1.26.72-1.26 2.536 0 3.256l7.108 4.061c1.25.714 2.805-.189 2.805-1.628v-4.067l6.945 4.18Z" /></svg>
@@ -298,7 +299,7 @@ const Layout = () => {
                     </div>
                     <div className="flex items-center gap-3 w-full max-w-[400px] text-xs text-gray-500 dark:text-zinc-400 font-medium">
                         <span className="w-8 text-right">{formatTime(currentTime)}</span>
-                        <div ref={progressBarRef} className="h-2 bg-gray-200 rounded-full flex-1 relative cursor-pointer group py-2 -my-2" onMouseDown={(e) => {
+                        <div ref={progressBarRef} className="h-6 flex-1 relative cursor-pointer group flex items-center" onMouseDown={(e) => {
                                 setIsDraggingProgress(true);
                                 if (progressBarRef.current && duration) {
                                     const bounds = progressBarRef.current.getBoundingClientRect();
@@ -307,16 +308,19 @@ const Layout = () => {
                                     if (audioRef.current) audioRef.current.currentTime = percent * duration;
                                 }
                             }}>
-                            <div className="absolute top-1/2 -translate-y-1/2 left-0 h-2 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full slider-bar transition-all" style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}></div>
+                            {/* Background track */}
+                            <div className="absolute w-full h-1 bg-gray-200 dark:bg-zinc-700 rounded-full"></div>
+                            {/* Filled track */}
+                            <div className="absolute left-0 h-1 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full slider-bar transition-all" style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}></div>
                             {/* Bolita al pasar el ratón */}
-                            <div className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white border-2 border-orange-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" style={{ left: `calc(${duration ? (currentTime / duration) * 100 : 0}% - 8px)` }}></div>
+                            <div className="absolute w-3 h-3 bg-orange-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" style={{ left: `calc(${duration ? (currentTime / duration) * 100 : 0}% - 6px)` }}></div>
                         </div>
                         <span className="w-8 text-left">{formatTime(duration)}</span>
                     </div>
                 </div>
-                <div className="w-1/4 flex justify-end items-center gap-2 text-sm text-gray-500">
+                <div className="hidden md:flex w-1/4 justify-end items-center gap-2 text-sm text-gray-500">
                     <span>🔊</span>
-                    <div ref={volumeBarRef} className="w-24 h-2 bg-gray-200 rounded-full relative cursor-pointer group py-2 -my-2" onMouseDown={(e) => {
+                    <div ref={volumeBarRef} className="w-24 h-6 relative cursor-pointer group flex items-center" onMouseDown={(e) => {
                             setIsDraggingVolume(true);
                             if (volumeBarRef.current) {
                                 const bounds = volumeBarRef.current.getBoundingClientRect();
@@ -325,8 +329,12 @@ const Layout = () => {
                                 if (audioRef.current) audioRef.current.volume = percent;
                             }
                         }}>
-                        <div className="absolute top-1/2 -translate-y-1/2 left-0 h-2 bg-orange-400 rounded-full" style={{ width: `${volume * 100}%` }}></div>
-                        <div className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-white border-2 border-orange-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm" style={{ left: `calc(${volume * 100}% - 6px)` }}></div>
+                        {/* Background track */}
+                        <div className="absolute w-full h-1 bg-gray-200 dark:bg-zinc-700 rounded-full"></div>
+                        {/* Filled track */}
+                        <div className="absolute left-0 h-1 bg-orange-500 rounded-full" style={{ width: `${volume * 100}%` }}></div>
+                        {/* Knob */}
+                        <div className="absolute w-3 h-3 bg-orange-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm" style={{ left: `calc(${volume * 100}% - 6px)` }}></div>
                     </div>
                 </div>
             </div>

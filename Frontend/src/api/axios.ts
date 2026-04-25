@@ -13,7 +13,7 @@ api.interceptors.response.use(
     },
     (error) => {
         // Si Django nos devuelve un error...
-        if (error.response && error.response.status === 401) {
+        if (error.response && error.response.status === 401 && !error.config.url.includes('token/')) {
             // Un 401 significa que el Token no es válido o ha caducado.
             
             // 1. Limpiamos la memoria corrupta

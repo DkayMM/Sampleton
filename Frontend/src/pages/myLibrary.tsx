@@ -58,6 +58,12 @@ const MyLibrary = () => {
 
     useEffect(() => { fetchData(); }, [navigate]);
 
+    useEffect(() => {
+        const handleRefresh = () => fetchData();
+        window.addEventListener('playlistRefresh', handleRefresh);
+        return () => window.removeEventListener('playlistRefresh', handleRefresh);
+    }, []);
+
     // 🚨 FUNCIONALIDAD DE BORRADO SEGURO
     const handleDelete = async (id: number, type: 'track' | 'playlist') => {
         if (!window.confirm(`¿Estás seguro de que quieres borrar este ${type}? Esta acción no se puede deshacer.`)) return;
@@ -81,12 +87,12 @@ const MyLibrary = () => {
     return (
         <div className="w-full max-w-5xl mx-auto flex flex-col animate-fadeIn">
             
-            <div className="flex items-center gap-8 mb-10 mt-4">
-                <div className="w-40 h-40 bg-gray-200 dark:bg-zinc-800 rounded-full border border-gray-400 dark:border-zinc-600 overflow-hidden flex-shrink-0 flex items-center justify-center">
-                    {profile?.avatar_file ? <img src={profile.avatar_file} alt="Avatar" className="w-full h-full object-cover" /> : <span className="text-6xl text-gray-400 dark:text-zinc-500">👤</span>}
+            <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 mb-6 md:mb-10 mt-4 text-center md:text-left">
+                <div className="w-24 h-24 md:w-40 md:h-40 bg-gray-200 dark:bg-zinc-800 rounded-full border border-gray-400 dark:border-zinc-600 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                    {profile?.avatar_file ? <img src={profile.avatar_file} alt="Avatar" className="w-full h-full object-cover" /> : <span className="text-5xl md:text-6xl text-gray-400 dark:text-zinc-500">👤</span>}
                 </div>
-                <div className="flex flex-col gap-2 flex-1">
-                    <h1 className="text-4xl font-bold dark:text-zinc-100">{profile?.display_name || profile?.username || 'User'}</h1>
+                <div className="flex flex-col gap-1 md:gap-2 flex-1">
+                    <h1 className="text-3xl md:text-4xl font-bold dark:text-zinc-100">{profile?.display_name || profile?.username || 'User'}</h1>
                     <p className="text-gray-500 dark:text-zinc-400 font-medium">@{profile?.username}</p>
                     {profile?.bio && <p className="text-sm mt-2 max-w-2xl text-gray-700 dark:text-zinc-300">{profile.bio}</p>}
                 </div>
