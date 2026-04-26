@@ -1,14 +1,22 @@
+/**
+ * login.tsx
+ * ---------
+ * Handles user authentication through username and password credentials.
+ *
+ * The page performs basic client-side validation, requests JWT tokens from
+ * the backend, and persists them for authenticated navigation.
+ */
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
 
 const Login = () => {
-    // 1. MEMORIA DE LOS VALORES
+    /** Stores user-provided credentials for authentication. */
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [globalError, setGlobalError] = useState('');
 
-    // 2. MEMORIA DE ERRORES (En tiempo real)
+    /** Stores per-field validation messages updated during input handling. */
     const [fieldErrors, setFieldErrors] = useState({
         username: '',
         password: ''
@@ -16,7 +24,9 @@ const Login = () => {
     
     const navigate = useNavigate();
 
-    // 3. VALIDACIÓN BÁSICA (Solo comprobamos que no estén vacíos)
+    /**
+     * Performs basic field validation to ensure required inputs are not empty.
+     */
     const validarCampo = (campo: string, valor: string) => {
         let mensaje = '';
         if (valor.trim() === '') {
@@ -26,7 +36,9 @@ const Login = () => {
         return mensaje === '';
     };
 
-    // 4. FUNCIÓN AL ENVIAR FORMULARIO
+    /**
+     * Validates credentials and requests authentication tokens from the API.
+     */
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); 
         setGlobalError('');
@@ -37,26 +49,26 @@ const Login = () => {
         if (!usernameValido || !passwordValido) return; 
         
         try {
-            // Llamamos a la taquilla de Django (el endpoint que configuramos ayer)
+            // Requests JWT tokens from the Django authentication endpoint.
             const response = await api.post('token/', {
                 username: username,
                 password: password
             });
             
-            // 🚨 ¡LA MAGIA DEL LOGIN! Guardamos las "pulseras VIP" en el navegador
+            // Persists tokens in local storage for authenticated API access.
             localStorage.setItem('access', response.data.access);
             localStorage.setItem('refresh', response.data.refresh);
             
-            // Si todo va bien, lo mandamos a la página principal (la crearemos luego)
+            // Redirects to the home page after a successful login.
             navigate('/'); 
             
         } catch (err) {
-            // Si Django devuelve un error 401 (No autorizado)
+            // Displays a user-facing error when authentication fails.
             setGlobalError('Usuario o contraseña incorrectos. Por favor, inténtalo de nuevo.');
         }
     };
 
-    // 5. DISEÑO (Hermano gemelo del Registro)
+    /** Renders the login page with inline validation feedback. */
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-zinc-900 font-sans text-black dark:text-zinc-100 transition-colors duration-300">
             

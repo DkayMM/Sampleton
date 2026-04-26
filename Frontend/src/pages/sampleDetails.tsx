@@ -1,3 +1,11 @@
+/**
+ * sampleDetails.tsx
+ * -----------------
+ * Renders the detail view for a single sample.
+ *
+ * The page combines metadata, comments, and likes, and exposes interaction
+ * flows for playback, sharing, commenting, and playlist assignment.
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useOutletContext, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
@@ -21,13 +29,14 @@ const SampleDetails = () => {
     const [newComment, setNewComment] = useState('');
     const [isLoading, setIsLoading] = useState(true);
 
-    // Nuevos estados para Likes y Share
+    /** State variables for the like system and the share dropdown. */
     const [likes, setLikes] = useState<any[]>([]);
     const [myUserId, setMyUserId] = useState<number | null>(null);
     const [isShareOpen, setIsShareOpen] = useState(false);
     
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    /** Updates the sample cover image for the owner. */
     const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
@@ -46,13 +55,14 @@ const SampleDetails = () => {
         }
     };
 
+    /** Fetches sample metadata, comments, likes, and current user context. */
     useEffect(() => {
         const fetchDetails = async () => {
             try {
                 const trackRes = await api.get(`tracks/${id}/`);
                 setTrack(trackRes.data);
 
-                // Pedimos los comentarios filtrados por esta canción
+                // Fetch comments filtered by the current track ID.
                 const commentsRes = await api.get(`comments/?track=${id}`);
                 setComments(commentsRes.data);
 
@@ -77,6 +87,7 @@ const SampleDetails = () => {
         if (id) fetchDetails();
     }, [id]);
 
+    /** Submits a new comment for the current sample. */
     const handlePostComment = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newComment.trim()) return;
@@ -105,6 +116,7 @@ const SampleDetails = () => {
         }
     };
 
+    /** Toggles the authenticated user's like state for this sample. */
     const handleLike = async () => {
         const token = localStorage.getItem('access');
         if (!token) {
@@ -115,11 +127,11 @@ const SampleDetails = () => {
         const myLike = likes.find(l => l.user === myUserId);
         try {
             if (myLike) {
-                // Remove like
+                // Remove the existing like.
                 await api.delete(`likes/${myLike.id}/`, { headers: { 'Authorization': `Bearer ${token}` } });
                 setLikes(likes.filter(l => l.id !== myLike.id));
             } else {
-                // Add like
+                // Add a new like.
                 if (track) {
                     const res = await api.post('likes/', { track: track.id }, { headers: { 'Authorization': `Bearer ${token}` } });
                     setLikes([...likes, res.data]);
@@ -133,16 +145,16 @@ const SampleDetails = () => {
     if (isLoading) return <div className="p-8 font-bold text-center">Cargando sample...</div>;
     if (!track) return <div className="p-8 font-bold text-red-500 text-center">Sample no encontrado.</div>;
 
-    // Generamos barras aleatorias para simular la onda de sonido visualmente
+    // Generate random bar heights to simulate a static waveform visualisation.
     const waveformBars = Array.from({ length: 60 }).map(() => Math.floor(Math.random() * 80) + 20);
 
     return (
         <div className="w-full max-w-5xl mx-auto flex flex-col pb-32 pt-8">
             
-            {/* --- SECCIÓN SUPERIOR: PORTADA, ONDA Y BOTONES --- */}
+            {/* Upper section: cover image, waveform visualiser, and action buttons */}
             <div className="flex flex-col md:flex-row gap-8 items-start mb-12">
                 
-                {/* Portada (Izquierda) */}
+                {/* Cover image (left column) */}
                 <div 
                     onClick={() => {
                         if (myUserId === track.user) {
@@ -157,7 +169,7 @@ const SampleDetails = () => {
                         <span className="w-full h-full flex items-center justify-center text-6xl opacity-30">🎵</span>
                     )}
                     
-                    {/* Texto Edit Cover */}
+                    {/* Edit cover overlay, visible only to the track owner */}
                     {myUserId === track.user && (
                         <div className="absolute inset-0 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40 backdrop-blur-sm">
                             <span className="text-white font-bold text-lg drop-shadow-md bg-black/50 px-4 py-2 rounded-full border border-white/20">Edit Cover</span>
@@ -166,7 +178,7 @@ const SampleDetails = () => {
                     <input type="file" accept="image/*" ref={fileInputRef} onChange={handleCoverChange} className="hidden" />
                 </div>
 
-                {/* Detalles (Derecha) */}
+                {/* Track details (right column) */}
                 <div className="flex-1 flex flex-col w-full text-center md:text-left">
                     <div className="mb-4 flex flex-col md:flex-row items-center justify-between gap-4 md:gap-0">
                         <div>
@@ -186,7 +198,7 @@ const SampleDetails = () => {
                         </button>
                     </div>
 
-                    {/* Waveform Visualizer */}
+                    {/* Static waveform visualiser that doubles as a play button */}
                     <div className="w-full h-24 bg-gray-50 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-lg flex items-center justify-between px-2 mb-6 cursor-pointer hover:bg-orange-50/50 dark:hover:bg-zinc-700 hover:border-orange-300 transition-all shadow-inner" onClick={() => handlePlayTrack(track)}>
                         {waveformBars.map((height, i) => (
                             <div 
@@ -246,7 +258,7 @@ const SampleDetails = () => {
 
             <hr className="border-t border-black dark:border-zinc-700 mb-10 opacity-20 dark:opacity-100" />
 
-            {/* --- SECCIÓN INFERIOR: COMENTARIOS --- */}
+            {/* Lower section: comments */}
             <div className="flex flex-col gap-8">
                 <h2 className="text-2xl font-bold">Comments</h2>
 

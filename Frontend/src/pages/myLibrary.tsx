@@ -1,3 +1,12 @@
+/**
+ * myLibrary.tsx
+ * -------------
+ * Renders the authenticated user's personal library view.
+ *
+ * This page aggregates profile data, user-owned tracks, playlists, and liked
+ * tracks, then exposes contextual actions such as playback, deletion, and
+ * adding tracks to playlists.
+ */
 import React, { useState, useEffect } from 'react';
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
@@ -21,14 +30,16 @@ const MyLibrary = () => {
     const [activeTab, setActiveTab] = useState('Samples'); 
     const [isLoading, setIsLoading] = useState(true);
 
-    // 🚨 ESTADO PARA EL MENÚ DE 3 PUNTITOS
+    /** Tracks which contextual menu is open, identified by a unique string key. */
     const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
+    /** Counts valid playlist tracks that are currently available in memory. */
     const getPlaylistTrackCount = (pl: any) => {
         if (!context?.tracks || !pl.tracks) return 0;
         return Array.from(new Set(pl.tracks)).filter((tid: any) => context.tracks!.some(t => t.id === tid)).length;
     };
 
+    /** Fetches and normalizes profile, playlist, track, and like datasets. */
     const fetchData = async () => {
         const token = localStorage.getItem('access');
         const username = localStorage.getItem('username');
@@ -43,10 +54,10 @@ const MyLibrary = () => {
             ]);
             setProfile(profileRes.data);
             setPlaylists(playlistsRes.data);
-            // 🚨 Filtramos para que solo salgan las canciones subidas por TI
+            // Only keep tracks that belong to the authenticated user.
             setMyTracks(tracksRes.data.filter((t: any) => t.user === profileRes.data.user || t.artist === username));
             
-            // 🚨 Filtramos canciones a las que les diste like
+            // Filter tracks to those the current user has liked.
             setLikedTracks(tracksRes.data.filter((t: any) => likesRes.data.some((l: any) => l.track === t.id)));
             
         } catch (error) {  
@@ -58,13 +69,17 @@ const MyLibrary = () => {
 
     useEffect(() => { fetchData(); }, [navigate]);
 
+    /** Subscribes to global playlist refresh events emitted by other pages. */
     useEffect(() => {
         const handleRefresh = () => fetchData();
         window.addEventListener('playlistRefresh', handleRefresh);
         return () => window.removeEventListener('playlistRefresh', handleRefresh);
     }, []);
 
-    // 🚨 FUNCIONALIDAD DE BORRADO SEGURO
+    /**
+     * Deletes a track or playlist after the user confirms the action.
+     * Reloads the library automatically once the deletion succeeds.
+     */
     const handleDelete = async (id: number, type: 'track' | 'playlist') => {
         if (!window.confirm(`¿Estás seguro de que quieres borrar este ${type}? Esta acción no se puede deshacer.`)) return;
         
@@ -75,7 +90,7 @@ const MyLibrary = () => {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             setOpenMenuId(null);
-            fetchData(); // Recargamos la lista automáticamente tras borrar
+            fetchData(); // Reload the list automatically after deletion.
         } catch (error) { 
             alert("Error al borrar. Asegúrate de que tienes permisos."); 
             console.error(error);
@@ -106,7 +121,7 @@ const MyLibrary = () => {
 
             <div className="pb-24">
                 
-                {/* --- PESTAÑA SAMPLES --- */}
+                {/* Samples tab */}
                 {activeTab === 'Samples' && (
                     <div className="flex flex-col gap-3">
                         <div onClick={() => navigate('/upload')} className="flex items-center gap-4 p-4 border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-xl cursor-pointer hover:border-orange-500 dark:hover:border-orange-500 transition-all group bg-gray-50 dark:bg-zinc-800/30 hover:bg-orange-50/30 dark:hover:bg-zinc-800 text-gray-500 dark:text-zinc-400 hover:text-orange-500 mb-2">
@@ -139,7 +154,7 @@ const MyLibrary = () => {
                                     <div className="relative flex items-center">
                                         <button onClick={(e) => { e.stopPropagation(); context?.openPlaylistModal?.(track); }} className="mr-2 w-8 h-8 border-2 border-gray-200 dark:border-zinc-700 rounded-full flex items-center justify-center font-bold text-gray-400 dark:text-zinc-400 hover:text-orange-500 dark:hover:text-orange-500 hover:border-orange-500 dark:hover:border-orange-500 transition-colors bg-white dark:bg-zinc-800 shadow-sm" title="Add to Playlist">+</button>
                                         
-                                        {/* 🚨 BOTÓN DE 3 PUNTOS Y MENÚ DESPLEGABLE (SAMPLES) */}
+                                        {/* Three-dot options menu for a track */}
                                         <button onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === `t-${track.id}` ? null : `t-${track.id}`); }} className="p-2 w-8 h-8 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-zinc-700 rounded-full font-bold text-xl transition-colors dark:text-zinc-300">⋮</button>
                                         
                                         {openMenuId === `t-${track.id}` && (
@@ -154,7 +169,7 @@ const MyLibrary = () => {
                     </div>
                 )}
 
-                {/* --- PESTAÑA PLAYLISTS --- */}
+                {/* Playlists tab */}
                 {activeTab === 'Playlists' && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div onClick={() => context?.openPlaylistModal?.(null)} className="flex items-center gap-4 p-4 border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-xl cursor-pointer hover:border-orange-500 dark:hover:border-orange-500 transition-all group bg-gray-50 dark:bg-zinc-800/30 hover:bg-orange-50/30 dark:hover:bg-zinc-800 text-gray-500 dark:text-zinc-400 hover:text-orange-500">
@@ -177,7 +192,7 @@ const MyLibrary = () => {
                                 </div>
                                 
                                 <div className="relative">
-                                    {/* 🚨 BOTÓN DE 3 PUNTOS Y MENÚ DESPLEGABLE (PLAYLISTS) */}
+                                    {/* Three-dot options menu for a playlist */}
                                     <button onClick={(e) => { e.stopPropagation(); setOpenMenuId(openMenuId === `p-${pl.id}` ? null : `p-${pl.id}`); }} className="p-2 w-8 h-8 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-zinc-700 rounded-full font-bold text-xl transition-colors dark:text-zinc-300">⋮</button>
                                     
                                     {openMenuId === `p-${pl.id}` && (
@@ -191,7 +206,7 @@ const MyLibrary = () => {
                     </div>
                 )}
 
-                {/* --- PESTAÑA LIKES --- */}
+                {/* Likes tab */}
                 {activeTab === 'Likes' && (
                     <div className="flex flex-col gap-3">
                         {likedTracks.length === 0 ? (

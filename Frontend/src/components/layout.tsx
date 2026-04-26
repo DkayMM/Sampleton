@@ -1,3 +1,14 @@
+/**
+ * layout.tsx
+ * ----------
+ * Defines the application shell shared by all pages.
+ *
+ * Layout manages global state including the track list, the currently playing
+ * track, playback controls, dark mode preference, and the playlist modal.
+ * All of this state is passed down to child pages through React Router's
+ * Outlet context, keeping individual pages free of data-fetching logic.
+ */
+
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import api from '../api/axios';
@@ -26,7 +37,10 @@ const Layout = () => {
     const volumeBarRef = useRef<HTMLDivElement>(null);
     const progressBarRef = useRef<HTMLDivElement>(null);
 
-    // 🚨 ESTADO DEL MODO OSCURO
+    /**
+     * Dark mode state. Defaults to dark and is persisted in local storage
+     * so the user's preference survives page refreshes.
+     */
     const [isDarkMode, setIsDarkMode] = useState(true);
     useEffect(() => {
         const theme = localStorage.getItem('theme');
@@ -50,7 +64,7 @@ const Layout = () => {
         }
     };
 
-    // 🚨 NUEVOS ESTADOS PARA EL MODAL DE PLAYLISTS
+    /** State related to the playlist selection modal. */
     const [isPlaylistModalOpen, setIsPlaylistModalOpen] = useState(false);
     const [trackToAdd, setTrackToAdd] = useState<any>(null);
     const [myPlaylists, setMyPlaylists] = useState<any[]>([]);
@@ -162,7 +176,7 @@ const Layout = () => {
         return `${Math.floor(time / 60)}:${Math.floor(time % 60).toString().padStart(2, '0')}`;
     };
 
-    // 🚨 FUNCIONES DEL MODAL DE PLAYLISTS
+    /** Handles playlist modal actions, including load, create, and attach flows. */
     const openPlaylistModal = async (track: any = null) => {
         if (isGuest) {
             alert("Debes iniciar sesión para usar las playlists.");
@@ -255,7 +269,7 @@ const Layout = () => {
                 </div>
             </header>
 
-            {/* 🚨 AÑADIMOS openPlaylistModal AL OUTLET PARA QUE LAS PÁGINAS PUEDAN USARLO */}
+            {/* The openPlaylistModal function is passed through the Outlet context so child pages can trigger it. */}
             <main className="max-w-[1600px] mx-auto p-6 flex gap-8">
                 <Outlet context={{ tracks, handlePlayTrack, currentTrack, isPlaying, openPlaylistModal, searchTerm, refreshTracks }} />
             </main>
@@ -308,11 +322,11 @@ const Layout = () => {
                                     if (audioRef.current) audioRef.current.currentTime = percent * duration;
                                 }
                             }}>
-                            {/* Background track */}
+                            {/* Background track of the progress bar */}
                             <div className="absolute w-full h-1 bg-gray-200 dark:bg-zinc-700 rounded-full"></div>
-                            {/* Filled track */}
+                            {/* Filled portion that reflects the current playback position */}
                             <div className="absolute left-0 h-1 bg-gradient-to-r from-orange-500 to-yellow-500 rounded-full slider-bar transition-all" style={{ width: `${duration ? (currentTime / duration) * 100 : 0}%` }}></div>
-                            {/* Bolita al pasar el ratón */}
+                            {/* Draggable knob that appears when hovering over the progress bar */}
                             <div className="absolute w-3 h-3 bg-orange-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-md" style={{ left: `calc(${duration ? (currentTime / duration) * 100 : 0}% - 6px)` }}></div>
                         </div>
                         <span className="w-8 text-left">{formatTime(duration)}</span>
@@ -329,17 +343,17 @@ const Layout = () => {
                                 if (audioRef.current) audioRef.current.volume = percent;
                             }
                         }}>
-                        {/* Background track */}
+                        {/* Background track of the volume bar */}
                         <div className="absolute w-full h-1 bg-gray-200 dark:bg-zinc-700 rounded-full"></div>
-                        {/* Filled track */}
+                        {/* Filled portion that reflects the current volume level */}
                         <div className="absolute left-0 h-1 bg-orange-500 rounded-full" style={{ width: `${volume * 100}%` }}></div>
-                        {/* Knob */}
+                        {/* Draggable knob that appears when hovering over the volume bar */}
                         <div className="absolute w-3 h-3 bg-orange-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm" style={{ left: `calc(${volume * 100}% - 6px)` }}></div>
                     </div>
                 </div>
             </div>
 
-            {/* 🚨 EL MODAL VISUAL DE PLAYLISTS */}
+            {/* Playlist selection modal */}
             {isPlaylistModalOpen && (
                 <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
                     <div className="bg-white dark:bg-zinc-900 p-6 border border-gray-200 dark:border-zinc-700 rounded-2xl shadow-2xl w-full max-w-md relative">
@@ -349,7 +363,7 @@ const Layout = () => {
                             {trackToAdd ? 'Add to Playlist' : 'Create Playlist'}
                         </h2>
 
-                        {/* Formulario Crear Nueva */}
+                        {/* Form to create a new playlist */}
                         <form onSubmit={handleCreatePlaylist} className="flex gap-2 mb-6">
                             <input 
                                 type="text" 
@@ -363,7 +377,7 @@ const Layout = () => {
                             </button>
                         </form>
 
-                        {/* Lista de Playlists Existentes (Solo si vamos a añadir una canción) */}
+                        {/* List of existing playlists, shown only when adding a track */}
                         {trackToAdd && (
                             <div className="flex flex-col gap-2 max-h-60 overflow-y-auto border-t border-gray-200 pt-4">
                                 <p className="text-xs font-bold text-gray-500 uppercase mb-2">Your Playlists</p>

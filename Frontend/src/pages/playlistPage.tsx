@@ -1,3 +1,11 @@
+/**
+ * playlistPage.tsx
+ * ----------------
+ * Displays a playlist detail page with playback and management actions.
+ *
+ * The page resolves playlist metadata, enriches track IDs with full track
+ * objects, and allows owners to edit cover art and remove tracks.
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useOutletContext, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
@@ -12,6 +20,7 @@ type ContextType = {
 const TrackDuration = ({ audioUrl }: { audioUrl: string }) => {
     const [duration, setDuration] = useState<string>('--:--');
 
+    /** Loads metadata from the audio source to derive track duration text. */
     useEffect(() => {
         if (!audioUrl) return;
         const audio = new Audio(audioUrl);
@@ -26,7 +35,7 @@ const TrackDuration = ({ audioUrl }: { audioUrl: string }) => {
 };
 
 const PlaylistPage = () => {
-    const { id } = useParams(); // Coge el número de la URL (ej: /playlist/1 -> id=1)
+    const { id } = useParams(); // Reads the playlist ID from the URL (e.g. /playlist/1 -> id=1)
     const navigate = useNavigate();
     const { tracks, handlePlayTrack, currentTrack, isPlaying } = useOutletContext<ContextType>();
 
@@ -35,6 +44,7 @@ const PlaylistPage = () => {
     const [myUserId, setMyUserId] = useState<number | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    /** Updates the playlist cover image when the owner selects a new file. */
     const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
@@ -52,12 +62,13 @@ const PlaylistPage = () => {
         }
     };
 
+    /** Retrieves playlist data and resolves the currently authenticated user. */
     useEffect(() => {
         const fetchPlaylist = async () => {
-            const token = localStorage.getItem('access'); // 👈 1. Buscamos la pulsera
+            const token = localStorage.getItem('access');
             
             try {
-                // 2. Se la enseñamos a Django en los headers
+                // Send the token in the Authorization header to authenticate the request.
                 const response = await api.get(`playlists/${id}/`, {
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -81,11 +92,12 @@ const PlaylistPage = () => {
     if (isLoading) return <div className="p-8 font-bold">Cargando playlist...</div>;
     if (!playlist) return <div className="p-8 font-bold text-red-500">No se encontró la playlist.</div>;
 
-    // 🚨 TRUCO NINJA: Cruzamos los IDs de la playlist con los tracks reales de nuestra memoria
+    // Cross-reference the playlist's track ID list with the full track objects held in memory.
     const playlistTracks = playlist.tracks && Array.isArray(playlist.tracks)
         ? Array.from(new Set(playlist.tracks)).map((tid: any) => tracks.find(t => t.id === tid)).filter(Boolean)
         : [];
 
+    /** Removes a track from the playlist after user confirmation. */
     const handleRemoveTrack = async (trackIdToRemove: number) => {
         if (!window.confirm("¿Estás seguro de que quieres quitar esta canción de la playlist?")) return;
         try {
@@ -95,7 +107,7 @@ const PlaylistPage = () => {
             await api.patch(`playlists/${id}/`, { tracks: newTracks }, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            // Update local state
+            // Update the local playlist state to reflect the removal immediately.
             setPlaylist({ ...playlist, tracks: newTracks });
         } catch (error) {
             console.error("Error quitando canción", error);
@@ -108,9 +120,9 @@ const PlaylistPage = () => {
     return (
         <div className="w-full max-w-5xl mx-auto flex flex-col pb-24">
             
-            {/* --- CABECERA DE LA PLAYLIST --- */}
+            {/* Playlist header: cover image and metadata */}
             <div className="flex flex-col md:flex-row items-center md:items-end text-center md:text-left gap-6 md:gap-8 mb-8 md:mb-12 mt-4 md:mt-8 px-4">
-                {/* Cuadrado grande de portada */}
+                {/* Large cover image square */}
                 <div
                     className={`w-56 h-56 bg-gradient-to-br from-orange-100 to-yellow-100 dark:from-zinc-800 dark:to-zinc-700 border-2 border-orange-200 dark:border-zinc-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-orange-100/50 dark:shadow-none relative overflow-hidden ${isOwner ? 'cursor-pointer group' : ''}`}
                     onClick={() => isOwner && fileInputRef.current?.click()}
@@ -135,7 +147,7 @@ const PlaylistPage = () => {
                         {playlistTracks.length} tracks • {playlist.is_public ? 'Public' : 'Private'}
                     </p>
                     
-                    {/* Botones de acción */}
+                    {/* Action buttons */}
                     <div className="flex items-center justify-center md:justify-start gap-4 mt-2">
                         <button 
                             onClick={() => { if (playlistTracks.length > 0) handlePlayTrack(playlistTracks[0]); }}
@@ -149,9 +161,9 @@ const PlaylistPage = () => {
                 </div>
             </div>
 
-            {/* --- TABLA DE CANCIONES --- */}
+            {/* Track list table */}
             <div className="flex flex-col w-full">
-                {/* Cabecera de la tabla */}
+                {/* Table header row */}
                 <div className="flex items-center text-xs font-bold text-gray-500 dark:text-zinc-400 border-y border-gray-300 dark:border-zinc-700 py-2 px-4 uppercase tracking-wider mb-2">
                     <div className="hidden sm:block w-8">#</div>
                     <div className="flex-1">Title</div>
@@ -159,7 +171,7 @@ const PlaylistPage = () => {
                     <div className="w-20 md:w-24 text-right">⏱ <span className="hidden sm:inline">Duration</span></div>
                 </div>
 
-                {/* Filas de canciones */}
+                {/* Track rows */}
                 {playlistTracks.length === 0 ? (
                     <div className="py-8 text-center text-gray-500 dark:text-zinc-500 italic">
                         Esta playlist está vacía.
@@ -171,7 +183,7 @@ const PlaylistPage = () => {
                             onClick={() => handlePlayTrack(track)}
                             className="flex items-center text-sm py-3 px-4 border-b border-gray-100 dark:border-zinc-800 hover:bg-orange-50/50 dark:hover:bg-zinc-800/80 transition-all cursor-pointer group"
                         >
-                            {/* Número o botón de Play al pasar el ratón */}
+                            {/* Row number that turns into a play icon on hover */}
                             <div className="hidden sm:block w-8 text-gray-500 font-medium group-hover:text-orange-500 transition-colors">
                                 <span className="group-hover:hidden">{index + 1}</span>
                                 <span className="hidden group-hover:inline text-orange-500 font-bold">
@@ -183,7 +195,7 @@ const PlaylistPage = () => {
                                 </span>
                             </div>
                             
-                            {/* Título con foto miniatura */}
+                            {/* Track title with thumbnail */}
                             <div className="flex-1 flex items-center gap-3 pr-2 md:pr-4">
                                 <div className="w-10 h-10 bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700 rounded-md flex-shrink-0 overflow-hidden shadow-sm">
                                     {track.cover_image ? (
@@ -198,15 +210,15 @@ const PlaylistPage = () => {
                                 </div>
                             </div>
                             
-                            {/* Artista (Solo Desktop) */}
+                            {/* Artist name column, hidden on small screens */}
                             <div className="hidden md:block w-1/3 text-gray-600 dark:text-zinc-400 truncate pr-4">{track.artist}</div>
                             
-                            {/* Duración */}
+                            {/* Track duration column */}
                             <div className="w-20 md:w-24 text-right text-gray-500 dark:text-zinc-400 font-medium text-xs md:text-sm">
                                 <TrackDuration audioUrl={track.audio_file} />
                             </div>
 
-                            {/* Botón Borrar */}
+                            {/* Remove track button */}
                             <button 
                                 onClick={(e) => { e.stopPropagation(); handleRemoveTrack(track.id); }}
                                 className="w-8 h-8 ml-2 md:ml-4 flex items-center justify-center rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all font-bold shrink-0"

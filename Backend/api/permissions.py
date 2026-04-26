@@ -1,14 +1,45 @@
+"""
+permissions.py
+--------------
+Defines custom DRF permission classes for the Sampleton API.
+
+These classes extend Django REST Framework's base permission system to enforce
+ownership-based access control, ensuring that only the creator of a resource
+can modify or delete it.
+"""
+
 from rest_framework import permissions
+
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
-    Permiso personalizado para que solo los dueños de un objeto puedan editarlo.
+    Custom permission that grants write access exclusively to the owner of an object.
+
+    Safe HTTP methods (GET, HEAD, OPTIONS) are permitted for any request,
+    including unauthenticated ones. All other methods (PUT, PATCH, DELETE)
+    are only allowed if the requesting user matches the 'user' field on the
+    target object.
+
+    This permission class assumes that the model being protected has a 'user'
+    field that references the Django User model.
     """
+
     def has_object_permission(self, request, view, obj):
-        # Los permisos de lectura (GET, HEAD u OPTIONS) siempre se permiten.
+        """
+        Checks whether the requesting user has permission to act on the given object.
+
+        Read operations are always permitted. Write operations are only permitted
+        if the requesting user is the owner of the object.
+
+        Args:
+            request: The incoming HTTP request.
+            view: The view that is handling the request.
+            obj: The model instance being accessed.
+
+        Returns:
+            bool: True if the request is allowed, False otherwise.
+        """
         if request.method in permissions.SAFE_METHODS:
             return True
 
-        # Los permisos de escritura (PUT, PATCH, DELETE) solo se permiten al dueño.
-        # Aquí 'obj.user' se refiere al campo 'user' del modelo Track/Playlist.
         return obj.user == request.user

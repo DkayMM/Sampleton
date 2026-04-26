@@ -1,3 +1,11 @@
+/**
+ * upload.tsx
+ * ----------
+ * Provides the upload workflow for creating a new track.
+ *
+ * The page validates the selected audio file, pre-fills artist metadata from
+ * the authenticated profile, and submits multipart form data to the API.
+ */
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import api from '../api/axios';
@@ -14,6 +22,7 @@ const Upload = () => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    /** Redirects unauthenticated users and preloads the artist display name. */
     useEffect(() => {
         const token = localStorage.getItem('access');
         if (!token) navigate('/login');
@@ -26,6 +35,9 @@ const Upload = () => {
         }
     }, [navigate]);
 
+    /**
+     * Validates that the selected file is an audio asset before storing it.
+     */
     const handleAudioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
@@ -39,10 +51,15 @@ const Upload = () => {
         }
     };
 
+    /** Stores the selected cover image file, if provided. */
     const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) setCoverFile(e.target.files[0]);
     };
 
+    /**
+     * Submits a new track payload as multipart form data.
+     * Includes optional cover art when available.
+     */
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError('');

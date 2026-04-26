@@ -1,3 +1,11 @@
+/**
+ * App.tsx
+ * -------
+ * Declares the root routing tree for the Sampleton frontend.
+ *
+ * Public authentication routes are defined at the top level, while all
+ * authenticated and shared pages are rendered inside the Layout route.
+ */
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect } from 'react';
 import Register from './pages/register';
@@ -11,6 +19,10 @@ import PlaylistPage from './pages/playlistPage';
 import SampleDetails from './pages/sampleDetails';
 
 function App() {
+  /**
+   * Initializes the persisted theme preference on first render.
+   * Dark mode is used as the default when no preference exists.
+   */
   useEffect(() => {
     const theme = localStorage.getItem('theme');
     if (theme === 'dark' || !theme) {
