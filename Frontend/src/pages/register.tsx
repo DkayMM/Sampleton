@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom'; 
 import api from '../api/axios';
 
-const Register = () => {
+export const Register = () => {
     /** Stores user-provided values for the registration form. */
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');

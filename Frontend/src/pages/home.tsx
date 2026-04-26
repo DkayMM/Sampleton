@@ -21,7 +21,7 @@ type ContextType = {
     searchTerm: string;
 };
 
-const Home = () => {
+export const Home = () => {
     const navigate = useNavigate();
     const { tracks, handlePlayTrack, currentTrack, isPlaying, openPlaylistModal, searchTerm } = useOutletContext<ContextType>();
 

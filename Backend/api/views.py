@@ -34,8 +34,9 @@ class TrackViewSet(viewsets.ModelViewSet):
         Returns the appropriate queryset based on the current action.
 
         For write operations (destroy, update, partial_update), only the
-        tracks belonging to the authenticated user are returned. For all
-        other actions, the full public queryset is returned.
+        tracks belonging to the authenticated user are returned. For list and
+        other read operations, all uploaded tracks are returned so guests can
+        browse the complete catalog.
 
         Returns:
             QuerySet: A filtered or unfiltered queryset of Track objects.

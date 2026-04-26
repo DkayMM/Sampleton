@@ -18,7 +18,7 @@ import MyLibrary from './pages/myLibrary';
 import PlaylistPage from './pages/playlistPage';
 import SampleDetails from './pages/sampleDetails';
 
-function App() {
+export function App() {
   /**
    * Initializes the persisted theme preference on first render.
    * Dark mode is used as the default when no preference exists.

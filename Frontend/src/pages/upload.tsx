@@ -10,7 +10,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useOutletContext } from 'react-router-dom';
 import api from '../api/axios';
 
-const Upload = () => {
+export const Upload = () => {
     const navigate = useNavigate();
     const { refreshTracks } = useOutletContext<any>();
 

@@ -19,7 +19,7 @@ type ContextType = {
     openPlaylistModal?: (track: any) => void;
 };
 
-const MyLibrary = () => {
+export const MyLibrary = () => {
     const navigate = useNavigate();
     const context = useOutletContext<ContextType>();
     

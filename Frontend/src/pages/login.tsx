@@ -10,7 +10,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../api/axios';
 
-const Login = () => {
+export const Login = () => {
     /** Stores user-provided credentials for authentication. */
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');

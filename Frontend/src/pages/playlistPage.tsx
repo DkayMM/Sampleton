@@ -34,7 +34,7 @@ const TrackDuration = ({ audioUrl }: { audioUrl: string }) => {
     return <span>{duration}</span>;
 };
 
-const PlaylistPage = () => {
+export const PlaylistPage = () => {
     const { id } = useParams(); // Reads the playlist ID from the URL (e.g. /playlist/1 -> id=1)
     const navigate = useNavigate();
     const { tracks, handlePlayTrack, currentTrack, isPlaying } = useOutletContext<ContextType>();

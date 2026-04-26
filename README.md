@@ -37,3 +37,37 @@ Full-stack project template.
 To start PostgreSQL using Docker Compose, run:
 
 `docker-compose up -d`
+
+## Automatic Documentation
+
+Official API documentation has been generated automatically from:
+
+- Python docstrings (backend) using Sphinx autodoc
+- JSDoc/TSDoc comments (frontend) using TypeDoc
+
+Generated output locations:
+
+- Backend HTML documentation: `docs/backend/_build/html/index.html`
+- Frontend HTML documentation: `docs/frontend/index.html`
+
+### Regenerate Backend Documentation
+
+From `Backend`:
+
+1. Install dependencies if needed:
+   `python -m pip install -r requirements.txt`
+2. Install documentation dependencies:
+   `python -m pip install sphinx djangorestframework-simplejwt`
+3. Build docs:
+   `python -m sphinx -b html ../docs/backend ../docs/backend/_build/html`
+
+### Regenerate Frontend Documentation
+
+From `Frontend`:
+
+1. Install dependencies:
+   `npm install`
+2. Install TypeDoc:
+   `npm install -D typedoc`
+3. Build docs:
+   `npx typedoc --entryPoints src --entryPointStrategy expand --out ../docs/frontend --skipErrorChecking`

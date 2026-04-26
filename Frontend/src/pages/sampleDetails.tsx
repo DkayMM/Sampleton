@@ -19,7 +19,7 @@ type ContextType = {
     refreshTracks: () => void;
 };
 
-const SampleDetails = () => {
+export const SampleDetails = () => {
     const { id } = useParams(); 
     const navigate = useNavigate();
     const { handlePlayTrack, currentTrack, isPlaying, openPlaylistModal, refreshTracks } = useOutletContext<ContextType>();

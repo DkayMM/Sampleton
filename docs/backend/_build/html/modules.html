@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>API Package &#8212; Sampleton Backend API  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=5ecbeea2" />
+    <link rel="stylesheet" type="text/css" href="_static/basic.css?v=b08954a9" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=27fed22d" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Sampleton Backend Documentation" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-api.admin">
+<span id="api-package"></span><h1>API Package<a class="headerlink" href="#module-api.admin" title="Link to this heading">¶</a></h1>
+<section id="admin-py">
+<h2>admin.py<a class="headerlink" href="#admin-py" title="Link to this heading">¶</a></h2>
+<p>Registers the application’s models with the Django admin site.</p>
+<p>Each model registered here will appear as a manageable section within the
+Django administration panel, allowing administrators to inspect, create,
+edit, and delete records directly from the browser interface.</p>
+</section>
+<section id="apps-py">
+<span id="module-api.apps"></span><h2>apps.py<a class="headerlink" href="#apps-py" title="Link to this heading">¶</a></h2>
+<p>Declares Django application configuration for the API module.</p>
+</section>
+<section id="models-py">
+<span id="module-api.models"></span><h2>models.py<a class="headerlink" href="#models-py" title="Link to this heading">¶</a></h2>
+<p>Defines the data models for the Sampleton application.</p>
+<p>Each class maps directly to a database table and represents a core entity of
+the domain: users, audio tracks, playlists, comments, and likes.</p>
+</section>
+<section id="permissions-py">
+<span id="module-api.permissions"></span><h2>permissions.py<a class="headerlink" href="#permissions-py" title="Link to this heading">¶</a></h2>
+<p>Defines custom DRF permission classes for the Sampleton API.</p>
+<p>These classes extend Django REST Framework’s base permission system to enforce
+ownership-based access control, ensuring that only the creator of a resource
+can modify or delete it.</p>
+</section>
+<section id="serializers-py">
+<span id="module-api.serializers"></span><h2>serializers.py<a class="headerlink" href="#serializers-py" title="Link to this heading">¶</a></h2>
+<p>Defines the DRF serializers for the Sampleton API.</p>
+<p>Each serializer is responsible for converting a model instance into a
+JSON-compatible representation and for validating incoming request data
+before it reaches the database. Read-only fields are marked explicitly
+to prevent users from supplying or modifying sensitive values.</p>
+</section>
+<section id="urls-py-api">
+<span id="module-api.urls"></span><h2>urls.py (api)<a class="headerlink" href="#urls-py-api" title="Link to this heading">¶</a></h2>
+<p>Defines the URL routing for the Sampleton REST API.</p>
+<p>All API endpoints are registered here using DRF’s DefaultRouter, which
+automatically generates the standard set of routes (list, detail, create,
+update, destroy) for each registered ViewSet.</p>
+</section>
+<section id="views-py">
+<span id="module-api.views"></span><h2>views.py<a class="headerlink" href="#views-py" title="Link to this heading">¶</a></h2>
+<p>Defines the API views for the Sampleton application.</p>
+<p>Each class in this module is a Django REST Framework ViewSet or generic view
+that handles a specific resource. Business logic such as ownership enforcement
+and queryset filtering is concentrated here, keeping the serializers focused
+purely on data transformation.</p>
+</section>
+</section>
+<section id="module-core.asgi">
+<span id="core-package"></span><h1>Core Package<a class="headerlink" href="#module-core.asgi" title="Link to this heading">¶</a></h1>
+<p>ASGI config for core project.</p>
+<p>It exposes the ASGI callable as a module-level variable named <code class="docutils literal notranslate"><span class="pre">application</span></code>.</p>
+<p>For more information on this file, see
+<a class="reference external" href="https://docs.djangoproject.com/en/6.0/howto/deployment/asgi/">https://docs.djangoproject.com/en/6.0/howto/deployment/asgi/</a></p>
+<section id="settings-py">
+<span id="module-core.settings"></span><h2>settings.py<a class="headerlink" href="#settings-py" title="Link to this heading">¶</a></h2>
+<p>Django configuration for the Sampleton project.</p>
+<p>Sensitive values such as the secret key and database credentials are loaded
+from environment variables via a .env file, keeping them out of version control.
+A safe fallback is provided for the secret key in local development only; it
+should never be used in a production environment.</p>
+<p>For more information on this file, see:
+<a class="reference external" href="https://docs.djangoproject.com/en/6.0/topics/settings/">https://docs.djangoproject.com/en/6.0/topics/settings/</a></p>
+<p>For the full list of available settings, see:
+<a class="reference external" href="https://docs.djangoproject.com/en/6.0/ref/settings/">https://docs.djangoproject.com/en/6.0/ref/settings/</a></p>
+</section>
+<section id="urls-py-core">
+<span id="module-core.urls"></span><h2>urls.py (core)<a class="headerlink" href="#urls-py-core" title="Link to this heading">¶</a></h2>
+<p>Root URL configuration for the Sampleton Django project.</p>
+<p>This module wires together the admin panel, the REST API routes defined in
+the api application, and the JWT authentication endpoints provided by
+djangorestframework-simplejwt. Media file serving is enabled only in
+development mode so that uploaded files are accessible during local testing.</p>
+</section>
+<p id="module-core.wsgi">WSGI config for core project.</p>
+<p>It exposes the WSGI callable as a module-level variable named <code class="docutils literal notranslate"><span class="pre">application</span></code>.</p>
+<p>For more information on this file, see
+<a class="reference external" href="https://docs.djangoproject.com/en/6.0/howto/deployment/wsgi/">https://docs.djangoproject.com/en/6.0/howto/deployment/wsgi/</a></p>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Sampleton Backend API</a></h1>
+
+
+
+
+
+
+
+
+
+<search id="searchbox" style="display: none" role="search">
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Search"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script><h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Modules</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#admin-py">admin.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#apps-py">apps.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#models-py">models.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#permissions-py">permissions.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#serializers-py">serializers.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#urls-py-api">urls.py (api)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#views-py">views.py</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#module-core.asgi">Core Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#settings-py">settings.py</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#urls-py-core">urls.py (core)</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Sampleton Backend Documentation</a></li>
+  </ul></li>
+</ul>
+</div>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 9.1.0</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 1.0.0</a>
+      
+      |
+      <a href="_sources/modules.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -13,9 +13,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
 import api from '../api/axios';
 
-const Layout = () => {
+export const Layout = () => {
     const navigate = useNavigate();
-    const [isGuest, setIsGuest] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [tracks, setTracks] = useState<any[]>([]);
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
@@ -69,6 +69,7 @@ const Layout = () => {
     const [trackToAdd, setTrackToAdd] = useState<any>(null);
     const [myPlaylists, setMyPlaylists] = useState<any[]>([]);
     const [newPlaylistTitle, setNewPlaylistTitle] = useState('');
+    const isGuest = !isAuthenticated;
 
     const refreshTracks = async () => {
         try {
@@ -82,19 +83,36 @@ const Layout = () => {
     useEffect(() => {
         const fetchData = async () => {
             const token = localStorage.getItem('access');
+
+            // Always load tracks for discovery, including guest users.
             try {
                 const tracksResponse = await api.get('tracks/');
-                setTracks(tracksResponse.data); 
-                if (!token) {
-                    setIsGuest(true);
-                } else {
-                    const profileResponse = await api.get('profile/me/', {
-                        headers: { 'Authorization': `Bearer ${token}` }
-                    });
-                    setAvatarUrl(profileResponse.data.avatar_file);
-                }
+                setTracks(tracksResponse.data);
             } catch (error) {
                 console.error("Error al cargar datos", error);
+            }
+
+            if (!token) {
+                setIsAuthenticated(false);
+                setAvatarUrl(null);
+                setIsProfileMenuOpen(false);
+                return;
+            }
+
+            try {
+                const profileResponse = await api.get('profile/me/', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                setAvatarUrl(profileResponse.data.avatar_file);
+                setIsAuthenticated(true);
+            } catch (error) {
+                // Expired or invalid token must fall back to guest behavior.
+                localStorage.removeItem('access');
+                localStorage.removeItem('refresh');
+                setAvatarUrl(null);
+                setIsAuthenticated(false);
+                setIsProfileMenuOpen(false);
+                console.error("Error loading profile, switched to guest mode", error);
             }
         };
         fetchData();
@@ -248,12 +266,10 @@ const Layout = () => {
                         {isDarkMode ? '☀️' : '🌙'}
                     </button>
                     <button onClick={() => navigate('/')} className="text-gray-600 dark:text-zinc-300 hover:text-orange-500 dark:hover:text-orange-400 px-2 py-1.5 md:px-3 rounded-full hover:bg-orange-50 dark:hover:bg-zinc-800 transition-colors whitespace-nowrap">Discover</button>
-                    {!isGuest && <button onClick={() => navigate('/library')} className="text-gray-600 dark:text-zinc-300 hover:text-orange-500 dark:hover:text-orange-400 px-2 py-1.5 md:px-3 rounded-full hover:bg-orange-50 dark:hover:bg-zinc-800 transition-colors whitespace-nowrap">My Library</button>}
+                    {isAuthenticated && <button onClick={() => navigate('/library')} className="text-gray-600 dark:text-zinc-300 hover:text-orange-500 dark:hover:text-orange-400 px-2 py-1.5 md:px-3 rounded-full hover:bg-orange-50 dark:hover:bg-zinc-800 transition-colors whitespace-nowrap">My Library</button>}
                     <button onClick={() => isGuest ? navigate('/login') : navigate('/upload')} className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-3 md:px-5 py-1.5 rounded-full flex items-center gap-1 md:gap-2 hover:shadow-lg hover:scale-105 transition-all outline-none border-none whitespace-nowrap shrink-0">↑ Upload</button>
                     
-                    {isGuest ? (
-                        <button onClick={() => navigate('/login')} className="w-8 h-8 md:w-9 md:h-9 shrink-0 rounded-full border-2 border-orange-500 text-orange-500 flex items-center justify-center hover:bg-orange-50 transition-colors">👤</button>
-                    ) : (
+                    {isAuthenticated ? (
                         <div className="relative" ref={menuRef}>
                             <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className={`w-9 h-9 rounded-full border-2 border-transparent hover:border-orange-500 flex items-center justify-center transition-all focus:outline-none overflow-hidden shadow-sm ${isProfileMenuOpen ? 'ring-2 ring-orange-500 ring-offset-2' : ''}`}>
                                 {avatarUrl ? <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" /> : <span className="text-gray-600">👤</span>}
@@ -265,6 +281,8 @@ const Layout = () => {
                                 </div>
                             )}
                         </div>
+                    ) : (
+                        <button onClick={() => navigate('/login')} className="w-8 h-8 md:w-9 md:h-9 shrink-0 rounded-full border-2 border-orange-500 text-orange-500 flex items-center justify-center hover:bg-orange-50 transition-colors">👤</button>
                     )}
                 </div>
             </header>
